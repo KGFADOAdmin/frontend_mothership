@@ -10,57 +10,46 @@ variables:
   
 # Define pipeline
 stages:
-  
   - stage: 'InstallDependecies'
-    displayName: 'Build the web application'
+    displayName: 'Install dependencies the web application'
     jobs: 
-    - job: 'Build'
+    - job: 'install'
       displayName: 'Build job'
       pool:
        vmImage: 'ubuntu-20.04'
-       demands:
-       - npm 
-  
+      steps:
+      - task: NodeTool@0
+        inputs:
+         versionSpec: '20.13.0'  # Node version
+        displayName: 'Install Node.js'
+ 
 
   # Build Stage
   - stage: 'Build'
     displayName: 'Build Stage'
     jobs:
-      - job: Compile
+      - job: Build
         displayName: 'Compile Job'
         pool:
           vmImage: 'ubuntu-latest'
           demands:
           - npm 
-
+      - job: SecurityScan
+        dependsOn: Build
+        condition: succeeded()
+        pool:
+         vmImage: ubuntu-latest
         steps:
         - task: UseDotNet@2
           displayName: 'Use .NET SDK $(dotnetSdkVersion)'
           inputs:
            version: '$(dotnetSdkVersion)'
-        - task: Npm@1
-          displayName: 'Install Dependencies'
-          inputs:
-           command: 'install'
-        - task: Npm@1
-          displayName: 'Run npm install'
-          inputs:
-           verbose: true
-        - script: 'echo "$(Build.DefinitionName), $(Build.BuildId), $(Build.BuildNumber)" > buildinfo.txt' 
-          displayName: 'Write build info'
-          workingDirectory: $(System.DefaultWorkingDirectory)
-        - task: UseDotNet@2
-          inputs: 
-           version: '6.x' #Specigy .NET Version
-           packageType: runtime
-        
-        #- script: dotnet restore
-       ##  displayName: 'Dependencies restore'
-          
-      #  - script: dotnet build --configuration Release --no-restore
-       #   workingDirectory: $(Agent.BuildDirectory)
-        #  displayName: 'Build Solution'
-  
+      - job: Test
+        dependsOn: SecurityScan  # Run tests after build completes
+        condition: succeeded()  # Only run tests if build succeeds
+        pool:
+         vmImage: ubuntu-latest
+
   # Test Stage
   - stage: Test
     displayName: 'Test Stage'

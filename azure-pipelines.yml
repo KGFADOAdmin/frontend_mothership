@@ -23,5 +23,7 @@ stages:
       - npm 
 
   variables:
-     
-     dotnetSdkVersion: '1.0'
+    wwwrootDir: 'frontend_mothership/wwwroot'
+    dotnetSdkVersion: '1.0'
+    
+ 

@@ -48,7 +48,7 @@ stages:
     - task: VSTest@1
       inputs:
         platform: '$(buildPlatform)'
-        configuration: '$(buildConfiguration'
+        configuration: '$(buildConfiguration)'
         codeCoverageEnabled: true
     - task: PublishBuildArtifacts@1
       inputs:

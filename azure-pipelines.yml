@@ -52,7 +52,7 @@ stages:
 
   # Test Stage
   - stage: Test
-    displayName: 'Test Stage'
+    displayName: 'Unit Test Stage'
     dependsOn: Build
     jobs:
       - job: UnitTests

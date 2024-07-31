@@ -10,6 +10,9 @@ trigger:
 variables:
   buildConfiguration: 'Dev'
   releaseBranchName: 'dev'
+  ariables:
+  wwwrootDir: 'frontend_mothership/wwwroot'
+  dotnetSdkVersion: '1.0'
 
 stages:
 - stage: 'Build'
@@ -22,8 +25,13 @@ stages:
       demands:
       - npm 
 
-  variables:
-    wwwrootDir: 'frontend_mothership/wwwroot'
-    dotnetSdkVersion: '1.0'
-    
- 
+    steps:
+    - task: UseDotNet@2
+      displayName: 'Use .NET SDK $(dotnetSdkVersion)'
+      inputs:
+        version: '$(dotnetSdkVersion)'
+
+    - task: Npm@1
+      displayName: 'Run npm install'
+      inputs:
+        verbose: false

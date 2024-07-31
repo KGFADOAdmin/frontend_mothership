@@ -55,9 +55,11 @@ stages:
            packageType: sdk
         
         - script: dotnet restore
+          workingDirectory: $(Agent.BuildDirectory)
           displayName: 'Dependencies restore'
           
         - script: dotnet build --configuration Release --no-restore
+          workingDirectory: $(Agent.BuildDirectory)
           displayName: 'Build Solution'
   
   # Test Stage

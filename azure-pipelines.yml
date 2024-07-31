@@ -10,8 +10,8 @@ trigger:
 variables:
   buildConfiguration: 'Dev'
   releaseBranchName: 'dev'
-  ariables:
-  wwwrootDir: '/home/vsts/wwwroot'
+  
+ 
   dotnetSdkVersion: '6.x'
 
 

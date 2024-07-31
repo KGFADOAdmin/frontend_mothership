@@ -3,7 +3,11 @@ trigger:
   branches:
     include:
       - '*'
-
+variables: 
+  dotnetSdkVersion: '6.x'
+  buildConfiguration: 'Release'
+  releaseBranchName: 'release'
+  
 # Define pipeline
 stages:
   
@@ -16,22 +20,7 @@ stages:
        vmImage: 'ubuntu-20.04'
        demands:
        - npm 
-      
-      steps:
-      - task: UseDotNet@2
-        displayName: 'Use .NET SDK $(dotnetSdkVersion)'
-        inputs:
-         version: '$(dotnetSdkVersion)'
-      - task: Npm@1
-        displayName: 'Install Dependencies'
-        inputs:
-         command: 'install'
-      - task: Npm@1
-        displayName: 'Run npm install'
-        inputs:
-         verbose: false
-      - script: 'echo "$(Build.DefinitionName), $(Build.BuildId), $(Build.BuildNumber)" > buildinfo.txt' 
-        displayName: 'Write build info'
+  
 
   # Build Stage
   - stage: 'Build'
@@ -41,14 +30,30 @@ stages:
         displayName: 'Compile Job'
         pool:
           vmImage: 'ubuntu-latest'
+          demands:
+          - npm 
+
         steps:
-          - task: UseDotNet@2
-            inputs:
+        - task: UseDotNet@2
+          displayName: 'Use .NET SDK $(dotnetSdkVersion)'
+          inputs:
+           version: '$(dotnetSdkVersion)'
+        - task: Npm@1
+          displayName: 'Install Dependencies'
+          inputs:
+           command: 'install'
+        - task: Npm@1
+          displayName: 'Run npm install'
+          inputs:
+           verbose: false
+        - script: 'echo "$(Build.DefinitionName), $(Build.BuildId), $(Build.BuildNumber)" > buildinfo.txt' 
+          displayName: 'Write build info'
+        - task: UseDotNet@2
+          inputs:
               packageType: 'sdk'
               version: '6.x' # Specify your .NET version
-
-          - script: dotnet build --configuration Release --no-restore
-            displayName: 'Build solution'
+        - script: dotnet build --configuration Release --no-restore
+          displayName: 'Build solution'
   
   # Test Stage
   - stage: Test

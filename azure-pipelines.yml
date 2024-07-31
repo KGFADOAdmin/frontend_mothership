@@ -48,12 +48,16 @@ stages:
            verbose: false
         - script: 'echo "$(Build.DefinitionName), $(Build.BuildId), $(Build.BuildNumber)" > buildinfo.txt' 
           displayName: 'Write build info'
+          workingDirectory: $(wwwrootDir)
         - task: UseDotNet@2
-          inputs:
-              packageType: 'sdk'
-              version: '6.x' # Specify your .NET version
+          inputs: 
+           version: '6.x' #Specigy .NET Version
+           packageType: sdk
+        
+        - script: dotnet restore
+          displayName: 'Dependencies restore'
         - script: dotnet build --configuration Release --no-restore
-          displayName: 'Build solution'
+          displayName: 'Build Solution'
   
   # Test Stage
   - stage: Test

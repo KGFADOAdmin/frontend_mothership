@@ -52,7 +52,7 @@ stages:
         - task: UseDotNet@2
           inputs: 
            version: '6.x' #Specigy .NET Version
-           packageType: sdk
+           packageType: runtime
         
         #- script: dotnet restore
        ##  displayName: 'Dependencies restore'

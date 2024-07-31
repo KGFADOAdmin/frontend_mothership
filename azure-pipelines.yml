@@ -15,31 +15,57 @@ variables:
   releaseBranchName: 'dev'
   dotnetSdkVersion: '6.x'
 
-steps:
-- task: UseDotNet@2
-  inputs:
-    packageType: 'sdk'
-    version: '6.x' # specify the .NET version you're using
+stages:
+- stage: 'Build'
+  displayName: 'Build the web application'
+  jobs: 
+  - job: 'Build'
+    displayName: 'Build job'
+    pool:
+      vmImage: 'ubuntu-20.04'
+      demands:
+      - npm 
+      
+    steps:
+    - task: UseDotNet@2
+      displayName: 'Use .NET SDK $(dotnetSdkVersion)'
+      inputs:
+        version: '$(dotnetSdkVersion)'
+    - task: Npm@1
+      displayName: 'Install Dependencies'
+      inputs:
+       command: 'install'
+    - task: Npm@1
+      displayName: 'Run npm install'
+      inputs:
+        verbose: false
+- stage: 'UnitTest'
+  displayName: 'Test the code'
+  jobs: 
+  - job: 'test'
+    displayName: 'Test job'
+    steps:
+      - task: UseDotNet@2
+        inputs:
+         packageType: 'sdk'
+         version: '6.x' # specify the .NET version you're using
 
-- script: dotnet restore
-  displayName: 'Restore dependencies'
+      - script: dotnet build --configuration Release --no-restore
+        displayName: 'Build solution'
 
-- script: dotnet build --configuration Release --no-restore
-  displayName: 'Build solution'
+      - script: dotnet test --no-build --verbosity normal
+        displayName: 'Run unit tests'
 
-- script: dotnet test --no-build --verbosity normal
-  displayName: 'Run unit tests'
+      - task: CopyFiles@2
+        inputs:
+          contents: '**/bin/Release/**'
+          targetFolder: '$(Build.ArtifactStagingDirectory)'
+        displayName: 'Copy build artifacts'
 
-- task: CopyFiles@2
-  inputs:
-    contents: '**/bin/Release/**'
-    targetFolder: '$(Build.ArtifactStagingDirectory)'
-  displayName: 'Copy build artifacts'
-
-- task: PublishBuildArtifacts@1
-  inputs:
-    PathtoPublish: '$(Build.ArtifactStagingDirectory)'
-    ArtifactName: 'drop'
-    publishLocation: 'Container'
+      - task: PublishBuildArtifacts@1
+        inputs:
+         PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+         ArtifactName: 'drop'
+         publishLocation: 'Container'
 
 

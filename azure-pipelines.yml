@@ -4,11 +4,24 @@
 # https://aka.ms/yaml
 
 trigger:
-- main
+- '*'
 
-pool:
-  vmImage: ubuntu-latest
 
-steps:
-- script: echo Hello, world!
-  displayName: 'Run a one-line script'
+variables:
+  buildConfiguration: 'Dev'
+  releaseBranchName: 'dev'
+
+stages:
+- stage: 'Build'
+  displayName: 'Build the web application'
+  jobs: 
+  - job: 'Build'
+    displayName: 'Build job'
+    pool:
+      vmImage: 'ubuntu-20.04'
+      demands:
+      - npm 
+
+  variables:
+     
+     dotnetSdkVersion: '1.0'

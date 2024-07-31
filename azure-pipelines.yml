@@ -12,7 +12,7 @@ variables:
   releaseBranchName: 'dev'
   ariables:
   wwwrootDir: 'frontend_mothership/wwwroot'
-  dotnetSdkVersion: '1.0'
+  dotnetSdkVersion: '6.x'
 
 stages:
 - stage: 'Build'

@@ -62,7 +62,7 @@ stages:
         steps:
           - script: dotnet test --no-build --verbosity normal
             displayName: 'Run unit tests'
-            workingDirectory: '$(Build.SourceDirectory)'
+            workingDirectory: '$(Agent.BuildDirectory)'
 
   # Packaging Stage
   - stage: Package

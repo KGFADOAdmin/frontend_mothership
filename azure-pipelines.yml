@@ -43,3 +43,15 @@ stages:
     - script: 'echo "$(Build.DefinitionName), $(Build.BuildId), $(Build.BuildNumber)" > buildinfo.txt' 
       displayName: 'Write build info'
       #workingDirectory: $(wwwrootDir)
+      
+
+    - task: VSTest@1
+      inputs:
+        platform: '$(buildPlatform)'
+        configuration: '$(buildConfiguration'
+        codeCoverageEnabled: true
+    - task: PublishBuildArtifacts@1
+      inputs:
+       PathtoPublish: '$(Build.ArtifactStage)'
+       ArtifactName: 'drop'
+       publishLocation: FilePath 

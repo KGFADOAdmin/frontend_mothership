@@ -55,3 +55,20 @@ stages:
        PathtoPublish: '$(Build.ArtifactStage)'
        ArtifactName: 'drop'
        publishLocation: FilePath 
+       MaxArtifactSize: 0
+
+    - task: DotNetCoreCLI@2
+      inputs:
+       command: 'test'
+       projects: '**/*.csproj'
+       arguments: 'output folder'
+       testRunTitle: 'app test result'
+       workingDirectory: '$(System.DefaultWorkingDirectory)'
+   
+    - task: ArchiveFiles@2
+      inputs:
+       rootFolderOrFile: '$(Build.BinariesDirectory)'
+       includeRootFolder: true
+       archiveType: 'zip'
+       archiveFile: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
+       replaceExistingArchive: true

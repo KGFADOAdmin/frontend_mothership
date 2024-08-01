@@ -20,7 +20,7 @@ stages:
       steps:
       - task: NodeTool@0
         inputs:
-         versionSpec: '20.13.0'  # Node version
+         versionSpec: '14.x'  # Node version
         displayName: 'Install Node.js'
  
 
@@ -57,9 +57,13 @@ stages:
     jobs:
       - job: UnitTests
         displayName: 'Run Unit Tests'
-        pool:
-          vmImage: 'ubuntu-latest'
-       
+        steps:
+        - task: PublishTestResults@2
+          inputs:
+            testResultsFormat: 'JUnit'
+            testResultsFiles: '**/test-results.xml'
+          displayName: 'Publish Test Results'
+
           
 
   # Packaging Stage

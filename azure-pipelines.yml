@@ -68,12 +68,7 @@ stages:
         - script: npm run package
           displayName: 'Package Application'
 
-        - task: PublishBuildArtifacts@1
-          inputs:
-            PathtoPublish: 'artifacts'
-            ArtifactName: 'Artifact'
-            publishLocation: 'Container'
-          displayName: 'Publish Build Artifacts'
+        
 
           
 

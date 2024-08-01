@@ -42,15 +42,17 @@ stages:
       pool:
         vmImage: ubuntu-latest
         steps:
-        - task: UseDotNet@2
-          displayName: 'Use .NET SDK $(dotnetSdkVersion)'
-          inputs:
-           version: '$(dotnetSdkVersion)'
-        - job: Test
-        dependsOn: SecurityScan  # Run tests after build completes
-        condition: succeeded()  # Only run tests if build succeeds
-        pool:
-         vmImage: ubuntu-latest
+        - task:
+          inputs: 
+            serviceConnectionEndpoint: ''
+            testType: 'app'
+            severityThreshold: 'medium'
+            monitorWhen: 'always'
+            failOnIssues: true
+            projectName: 'frontend_mothership'
+            organization: 'kgt'
+          
+        
 
   # Test Stage
   - stage: Test
@@ -65,11 +67,7 @@ stages:
             testResultsFormat: 'JUnit'
             testResultsFiles: '**/test-results.xml'
           displayName: 'Publish Test Results'
-        
 
-        
-
-          
 
   # Packaging Stage
   - stage: Package

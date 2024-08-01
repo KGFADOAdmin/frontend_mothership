@@ -62,12 +62,15 @@ stages:
         steps:
           - script: dotnet restore
             displayName: 'Restore dependencies'
+            workingDirectory: '$(Agent.BuildDirectory)'
 
           - script: dotnet build --configuration Release --no-restore
             displayName: 'Build solution'
+            workingDirectory: '$(Agent.BuildDirectory)'
 
           - script: dotnet test --no-build --verbosity normal
             displayName: 'Run unit tests'
+            workingDirectory: '$(Agent.BuildDirectory)'
           
 
   # Packaging Stage

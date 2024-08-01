@@ -65,8 +65,7 @@ stages:
             testResultsFormat: 'JUnit'
             testResultsFiles: '**/test-results.xml'
           displayName: 'Publish Test Results'
-        - script: npm run package
-          displayName: 'Package Application'
+        
 
         
 

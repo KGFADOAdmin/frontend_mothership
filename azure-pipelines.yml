@@ -29,8 +29,10 @@ stages:
       - script: npm install
         displayName: 'Install Dependencies'
 
-      - script: npm run build
+      - script: npm build
         displayName: 'Build Application'
+      - script: npm test
+        displayName: 'Run Unit Tests'
 
   
     - job: SecurityScan

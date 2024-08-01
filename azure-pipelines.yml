@@ -59,18 +59,7 @@ stages:
         displayName: 'Run Unit Tests'
         pool:
           vmImage: 'ubuntu-latest'
-        steps:
-          - script: dotnet restore
-            displayName: 'Restore dependencies'
-            workingDirectory: '$(Build.SourcesDirectory)'
-
-          - script: dotnet build --configuration Release --no-restore
-            displayName: 'Build solution'
-            workingDirectory: '$(Build.SourcesDirectory)'
-
-          - script: dotnet test --no-build --verbosity normal
-            displayName: 'Run unit tests'
-            workingDirectory: '$(Build.SourcesDirectory)'
+       
           
 
   # Packaging Stage

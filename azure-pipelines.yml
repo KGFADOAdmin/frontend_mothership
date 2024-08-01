@@ -62,7 +62,7 @@ stages:
   # Test Stage
   - stage: Test
     displayName: 'Unit Test Stage'
-    dependsOn: Build
+    dependsOn: SnykScan
     jobs:
       - job: UnitTests
         displayName: 'Run Unit Tests'

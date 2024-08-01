@@ -36,6 +36,7 @@ stages:
 
   
     - job: SecurityScan
+      displayName: Securityscan
       dependsOn: Build
       condition: succeeded()
       pool:

@@ -35,7 +35,12 @@ stages:
         displayName: 'Run Unit Tests'
 
    # SnykScan Stage
-    - job: SnykScan
+  - stage: 'SnykScan'
+    jobs:
+    - job: 'build'
+      displayName: 'Build job'
+
+    - job: 'SnykScan'
       displayName: SnykScan
       dependsOn: Build
       condition: succeeded()

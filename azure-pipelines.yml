@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 trigger:
   branches:
     include:
@@ -67,3 +68,99 @@ stages:
               approvers: |
                 - scrum.master@example.com
                 - product.owner@example.com
+=======
+# Trigger pipeline on any branch push
+trigger:
+  branches:
+    include:
+      - '*'
+variables: 
+  dotnetSdkVersion: '6.x'
+  buildConfiguration: 'Release'
+  releaseBranchName: 'release'
+  
+# Define pipeline
+stages:
+  - stage: 'InstallDependecies'
+    displayName: 'Install dependencies the web application'
+    jobs: 
+    - job: 'install'
+      displayName: 'Build job'
+      pool:
+       vmImage: 'ubuntu-20.04'
+      steps:
+      - task: NodeTool@0
+        inputs:
+         versionSpec: '20.13.0'  # Node version
+        displayName: 'Install Node.js'
+ 
+
+  # Build Stage
+  - stage: 'Build'
+    displayName: 'Build Stage'
+    jobs:
+      - job: Build
+        displayName: 'Compile Job'
+        pool:
+          vmImage: 'ubuntu-latest'
+          demands:
+          - npm 
+      - job: SecurityScan
+        dependsOn: Build
+        condition: succeeded()
+        pool:
+         vmImage: ubuntu-latest
+        steps:
+        - task: UseDotNet@2
+          displayName: 'Use .NET SDK $(dotnetSdkVersion)'
+          inputs:
+           version: '$(dotnetSdkVersion)'
+      - job: Test
+        dependsOn: SecurityScan  # Run tests after build completes
+        condition: succeeded()  # Only run tests if build succeeds
+        pool:
+         vmImage: ubuntu-latest
+
+  # Test Stage
+  - stage: Test
+    displayName: 'Unit Test Stage'
+    dependsOn: Build
+    jobs:
+      - job: UnitTests
+        displayName: 'Run Unit Tests'
+        pool:
+          vmImage: 'ubuntu-latest'
+        steps:
+          - script: dotnet restore
+            displayName: 'Restore dependencies'
+
+          - script: dotnet build --configuration Release --no-restore
+            displayName: 'Build solution'
+
+          - script: dotnet test --no-build --verbosity normal
+            displayName: 'Run unit tests'
+          
+
+  # Packaging Stage
+  - stage: Package
+    displayName: 'Packaging Stage'
+    dependsOn: Test
+    jobs:
+      - job: Package
+        displayName: 'Package Job'
+        pool:
+          vmImage: 'ubuntu-latest'
+        steps:
+          - task: CopyFiles@2
+            inputs:
+              contents: '**/bin/Release/**'
+              targetFolder: '$(Build.ArtifactStagingDirectory)'
+            displayName: 'Copy build artifacts'
+
+          - task: PublishBuildArtifacts@1
+            inputs:
+              PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+              ArtifactName: 'drop'
+              publishLocation: 'Container'
+            displayName: 'Publish artifacts'
+>>>>>>> features

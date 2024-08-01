@@ -63,6 +63,15 @@ stages:
             testResultsFormat: 'JUnit'
             testResultsFiles: '**/test-results.xml'
           displayName: 'Publish Test Results'
+        - script: npm run package
+          displayName: 'Package Application'
+
+        - task: PublishBuildArtifacts@1
+          inputs:
+            PathtoPublish: 'dist'
+            ArtifactName: 'drop'
+            publishLocation: 'Container'
+          displayName: 'Publish Build Artifacts'
 
           
 

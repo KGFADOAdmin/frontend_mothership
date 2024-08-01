@@ -34,7 +34,7 @@ stages:
       - script: npm test
         displayName: 'Run Unit Tests'
 
-  
+   # SnykScan Stage
     - job: SnykScan
       displayName: SnykScan
       dependsOn: Build

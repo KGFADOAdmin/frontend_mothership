@@ -23,7 +23,7 @@ stages:
          npm install set fund false
          set cache .npm
          ci
-         audit fix
+         
       displayName: 'Install Dependencies'
     
     - script: npm i sharp

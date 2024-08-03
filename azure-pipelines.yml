@@ -4,7 +4,8 @@ trigger:
 pool:
   vmImage: 'ubuntu-latest'
 
-
+variables:
+  SNYK_AUTH_TOKEN: $(SNYK_AUTH_TOKEN) # Securely store this in Azure DevOps pipeline variables
 
 stages:
 - stage: BuildAndScan
@@ -12,50 +13,72 @@ stages:
   jobs:
   - job: Build
     displayName: 'Build the project'
-    pool:
-       vmImage: 'ubuntu-20.04'
-       steps:
-       - task: NodeTool@0
-         inputs:
-         versionSpec: '14.x'  # Node version
-         displayName: 'Install Node.js'
-       - script: npm install
-         displayName: 'Install Dependencies'
-       - script: npm build
-         displayName: 'Build Application'
-       - script: npm test
-         displayName: 'Run Unit Tests'
-  
-  - job: 'SnykScan'
-    displayName: SnykScan
+    steps:
+    - task: NodeTool@0
+      inputs:
+        versionSpec: '14.x' # Specify the Node.js version
+        checkLatest: true
+
+    - script: npm install
+      displayName: 'Install Dependencies'
+
+    - script: npm run build
+      displayName: 'Build the Project'
+
+  - job: SnykScan
+    displayName: 'Snyk Security Scan'
     dependsOn: Build
-    condition: succeeded()
-    pool:
-     vmImage: ubuntu-latest
-     steps:
-      - task:
-          inputs: 
-            serviceConnectionEndpoint: ''
-            testType: 'app'
-            severityThreshold: 'medium'
-            monitorWhen: 'always'
-            failOnIssues: true
-            projectName: 'frontend_mothership'
-            organization: 'kgf'
-     
-- stage: NotifyAndApproval
-  displayName: 'Notify and Approval'
+    steps:
+    - script: |
+        echo "Running Snyk security scan"
+        npm install -g snyk
+        snyk auth $SNYK_AUTH_TOKEN
+        snyk test --severity-threshold=high --json > snyk-results.json
+      displayName: 'Run Snyk Scan'
+
+    - script: |
+        echo "Checking for Critical Vulnerabilities"
+        cat snyk-results.json
+        severityCount=$(jq '.vulnerabilities | map(select(.severity=="high" or .severity=="critical")) | length' snyk-results.json)
+        if [ "$severityCount" -gt 0 ]; then
+          echo "Critical vulnerabilities found!"
+          exit 1
+        fi
+      displayName: 'Check for Critical Vulnerabilities'
+
+- stage: TestDeployment
+  displayName: 'Test Environment Deployment'
   dependsOn: BuildAndScan
   condition: succeeded()
   jobs:
-   - job: Notify
-     displayName: 'Notify Scrum Master/Product Owner'
-   
-   - job: Approval
-     displayName: 'Approval to Proceed'
-     dependsOn: Notify
-     steps:
-     - script: |
-        echo "Approval required to proceed to testing environment."
-        # Implement the approval step here (e.g., manual intervention, gate approval)
-       displayName: 'Manual Approval Step'
+  - deployment: DeployToTest
+    displayName: 'Deploy to Test Environment'
+    environment: 'Test' # Define the environment in Azure DevOps
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - script: |
+              echo "Deploying to Test Environment"
+              # Deployment script or command (e.g., Azure CLI, Kubernetes, etc.)
+              # Example for a Node.js app deployment:
+              # az webapp deployment source config-zip --resource-group <resource-group> --name <app-name> --src <path-to-zip>
+            displayName: 'Deploy Application'
+            
+          - script: |
+              echo "Running Integration Tests"
+              npm run test:integration
+            displayName: 'Run Integration Tests'
+
+          - script: |
+              echo "Running System Tests"
+              npm run test:system
+            displayName: 'Run System Tests'
+
+          - task: PublishTestResults@2
+            inputs:
+              testResultsFiles: '**/test-results/*.xml'
+              testResultsFormat: 'JUnit'
+              failTaskOnFailedTests: true
+            displayName: 'Publish Test Results'
+

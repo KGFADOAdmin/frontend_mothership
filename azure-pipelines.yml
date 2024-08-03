@@ -39,7 +39,7 @@ stages:
         echo "Running Snyk security scan"
         npm install -g snyk 
         npm config set fund false
-        snyk auth $SNYK_AUTH_TOKEN
+        
         snyk test --severity-threshold=high --json > snyk-results.json
       displayName: 'Run Snyk Scan'
 

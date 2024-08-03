@@ -7,39 +7,53 @@ trigger:
 pool:
   vmImage: 'ubuntu-latest'
 
+  branches:
+    include:
+      - develop
+variables: 
+  dotnetSdkVersion: '6.x'
+  buildConfiguration: 'Release'
+  releaseBranchName: 'release'
+  
+ # Build Stage
 stages:
-- stage: Build
-  jobs:
-  - job: BuildJob
-    displayName: 'Build'
-    steps:
-    - task: UseDotNet@2
-      inputs:
-        packageType: 'sdk'
-        version: '5.x' # Replace with the version of .NET SDK you're using
-     
+  - stage: 'Build'
+    displayName: 'Build Stage'
+    jobs: 
+    - job: 'build'
+      displayName: 'Build job'
+      pool:
+       vmImage: 'ubuntu-20.04'
+      steps:
+      - task: NodeTool@0
+        inputs:
+         versionSpec: '14.x'  # Node version
+        displayName: 'Install Node.js'
+      - script: npm install
+        displayName: 'Install Dependencies'
 
-    - script: dotnet build --configuration Release
-      displayName: 'Build the project'
+      - script: npm build
+        displayName: 'Build Application'
+      
 
-- stage: UnitTests
-  dependsOn: Build
-  jobs:
-  - job: TestJob
-    displayName: 'Unit Tests'
-    steps:
-    - script: dotnet test --configuration Release --no-build --collect:"XPlat Code Coverage"
-      displayName: 'Run Unit Tests'
+  - stage: UnitTests
+    dependsOn: Build
+    jobs:
+    - job: TestJob
+      displayName: 'Unit Tests'
+      steps:
+       - script: dotnet test --configuration Release --no-build --collect:"XPlat Code Coverage"
+         displayName: 'Run Unit Tests'
 
-- stage: CodeReview
-  dependsOn: UnitTests
-  jobs:
-  - job: PRJob
-    displayName: 'Code Review'
-    steps:
-    - script: |
-        echo "Create a Pull Request for Code Review"
-        echo "Notify Scrum Master and Product Owner for approval"
-      displayName: 'Create Pull Request and Notify Approvers'
+  - stage: CodeReview
+    dependsOn: UnitTests
+    jobs:
+    - job: PRJob
+      displayName: 'Code Review'
+      steps:
+      - script: |
+           echo "Create a Pull Request for Code Review"
+           echo "Notify Scrum Master and Product Owner for approval"
+           displayName: 'Create Pull Request and Notify Approvers'
 
    

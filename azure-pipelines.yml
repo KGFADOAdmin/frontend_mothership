@@ -19,7 +19,10 @@ stages:
         versionSpec: '18.x' # Specify the Node.js version
         checkLatest: true
 
-    - script: npm install
+    - script: |
+         npm install
+         set cache .npm
+         ci
       displayName: 'Install Dependencies'
     
     - script: npm i sharp

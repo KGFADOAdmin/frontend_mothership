@@ -1,87 +1,45 @@
+
 # Trigger pipeline on any branch push
 trigger:
   branches:
     include:
       - '*'
-pr:
-  branches:
-    include:
-      - develop
-variables: 
-  dotnetSdkVersion: '6.x'
-  buildConfiguration: 'Release'
-  releaseBranchName: 'release'
-  
- # Build Stage
+pool:
+  vmImage: 'ubuntu-latest'
+
 stages:
-  - stage: 'Build'
-    displayName: 'Build Stage'
-    jobs: 
-    - job: 'build'
-      displayName: 'Build job'
-      pool:
-       vmImage: 'ubuntu-20.04'
-      steps:
-      - task: NodeTool@0
-        inputs:
-         versionSpec: '14.x'  # Node version
-        displayName: 'Install Node.js'
-      - script: npm install
-        displayName: 'Install Dependencies'
+- stage: Build
+  jobs:
+  - job: BuildJob
+    displayName: 'Build'
+    steps:
+    - task: UseDotNet@2
+      inputs:
+        packageType: 'sdk'
+        version: '5.x' # Replace with the version of .NET SDK you're using
+        installationPath: $(Agent.ToolsDirectory)/dotnet
 
-      - script: npm build
-        displayName: 'Build Application'
-      - script: npm test
-        displayName: 'Run Unit Tests'
+    - script: dotnet build --configuration Release
+      displayName: 'Build the project'
 
-   # SnykScan Stage
-  - stage: 'SnykScan'
-    jobs:
-    - job: 'build'
-      displayName: 'Build job'
+- stage: UnitTests
+  dependsOn: Build
+  jobs:
+  - job: TestJob
+    displayName: 'Unit Tests'
+    steps:
+    - script: dotnet test --configuration Release --no-build --collect:"XPlat Code Coverage"
+      displayName: 'Run Unit Tests'
 
-    - job: 'SnykScan'
-      displayName: SnykScan
-      dependsOn: Build
-      condition: succeeded()
-      pool:
-        vmImage: ubuntu-latest
-        steps:
-        - task:
-          inputs: 
-            serviceConnectionEndpoint: ''
-            testType: 'app'
-            severityThreshold: 'medium'
-            monitorWhen: 'always'
-            failOnIssues: true
-            projectName: 'frontend_mothership'
-            organization: 'kgt'
-          
-        
+- stage: CodeReview
+  dependsOn: UnitTests
+  jobs:
+  - job: PRJob
+    displayName: 'Code Review'
+    steps:
+    - script: |
+        echo "Create a Pull Request for Code Review"
+        echo "Notify Scrum Master and Product Owner for approval"
+      displayName: 'Create Pull Request and Notify Approvers'
 
-  # Test Stage
-  - stage: Test
-    displayName: 'Unit Test Stage'
-    dependsOn: SnykScan
-    jobs:
-      - job: UnitTests
-        displayName: 'Run Unit Tests'
-        steps:
-        - task: PublishTestResults@2
-          inputs:
-            testResultsFormat: 'JUnit'
-            testResultsFiles: '**/*.xml'
-          displayName: 'Publish Test Results'
-
-
-  # Packaging Stage
-  - stage: Package
-    displayName: 'Packaging Stage'
-    dependsOn: Test
-    jobs:
-      - job: Package
-        displayName: 'Package Job'
-        pool:
-          vmImage: 'ubuntu-latest'
-        
-
+   

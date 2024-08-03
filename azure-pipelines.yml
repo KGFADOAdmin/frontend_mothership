@@ -21,6 +21,9 @@ stages:
 
     - script: npm install
       displayName: 'Install Dependencies'
+    
+    - script: npm i sharp
+      displayName: 'install image optimizer'
 
     - script: npm run build
       displayName: 'Build the Project'
@@ -31,7 +34,7 @@ stages:
     steps:
     - script: |
         echo "Running Snyk security scan"
-        npm install -g snyk
+        npm install -g snyk set fund false 
         snyk auth $SNYK_AUTH_TOKEN
         snyk test --severity-threshold=high --json > snyk-results.json
       displayName: 'Run Snyk Scan'

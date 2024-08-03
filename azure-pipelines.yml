@@ -4,8 +4,7 @@ trigger:
 pool:
   vmImage: 'ubuntu-latest'
 
-variables:
-  SNYK_AUTH_TOKEN: $(SNYK_AUTH_TOKEN) # Set this variable in your pipeline settings
+
 
 stages:
 - stage: BuildAndScan

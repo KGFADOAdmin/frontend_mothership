@@ -27,38 +27,21 @@ stages:
        - script: npm test
          displayName: 'Run Unit Tests'
   
-  - job: SnykScan
-    displayName: 'Snyk Security Scan'
+  - job: 'SnykScan'
+    displayName: SnykScan
     dependsOn: Build
-    steps:
-    - script: |
-        echo "Running Snyk security scan"
-        
-        snyk test --severity-threshold=high --json > snyk-results.json
-      displayName: 'Run Snyk Scan'
-
-    - script: |
-        cat snyk-results.json
-        severityCount=$(jq '.vulnerabilities | map(select(.severity=="high" or .severity=="critical")) | length' snyk-results.json)
-        if [ "$severityCount" -gt 0 ]; then
-          echo "Critical vulnerabilities found!"
-          exit 1
-        fi
-      displayName: 'Check for Critical Vulnerabilities'
-
-- stage: NotifyAndApproval
-  displayName: 'Notify and Approval'
-  dependsOn: BuildAndScan
-  condition: succeeded()
-  jobs:
-  - job: Notify
-    displayName: 'Notify Scrum Master/Product Owner'
-   
-  - job: Approval
-    displayName: 'Approval to Proceed'
-    dependsOn: Notify
-    steps:
-    - script: |
-        echo "Approval required to proceed to testing environment."
-        # Implement the approval step here (e.g., manual intervention, gate approval)
-      displayName: 'Manual Approval Step'
+    condition: succeeded()
+    pool:
+     vmImage: ubuntu-latest
+     steps:
+      - task:
+          inputs: 
+            serviceConnectionEndpoint: ''
+            testType: 'app'
+            severityThreshold: 'medium'
+            monitorWhen: 'always'
+            failOnIssues: true
+            projectName: 'frontend_mothership'
+            organization: 'kgf'
+     
+      

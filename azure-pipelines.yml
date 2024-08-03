@@ -33,7 +33,7 @@ stages:
     steps:
     - script: |
         echo "Running Snyk security scan"
-        snyk auth $SNYK_AUTH_TOKEN
+        
         snyk test --severity-threshold=high --json > snyk-results.json
       displayName: 'Run Snyk Scan'
 

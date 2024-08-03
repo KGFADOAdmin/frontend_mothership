@@ -44,4 +44,19 @@ stages:
             projectName: 'frontend_mothership'
             organization: 'kgf'
      
-      
+- stage: NotifyAndApproval
+  displayName: 'Notify and Approval'
+  dependsOn: BuildAndScan
+  condition: succeeded()
+  jobs:
+   - job: Notify
+     displayName: 'Notify Scrum Master/Product Owner'
+   
+   - job: Approval
+     displayName: 'Approval to Proceed'
+     dependsOn: Notify
+     steps:
+     - script: |
+        echo "Approval required to proceed to testing environment."
+        # Implement the approval step here (e.g., manual intervention, gate approval)
+       displayName: 'Manual Approval Step'

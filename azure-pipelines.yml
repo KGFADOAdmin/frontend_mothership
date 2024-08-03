@@ -42,7 +42,7 @@ stages:
     - job: TestJob
       displayName: 'Unit Tests'
       steps:
-       - script: npm test
+       - script: npm tests
          displayName: 'Run Unit Tests'
 
   - stage: CodeReview

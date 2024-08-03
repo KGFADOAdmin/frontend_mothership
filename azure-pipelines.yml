@@ -17,12 +17,7 @@ stages:
     - task: NodeTool@0
       inputs:
         versionSpec: '18.x' # Specify the Node.js version
-        checkLatest: true
-
-    - script: |
-         npm install set fund false
-         set cache .npm
-         
+        checkLatest: true       
          
       displayName: 'Install Dependencies'
     
@@ -31,6 +26,10 @@ stages:
 
     - script: npm run build
       displayName: 'Build the Project'
+      
+    - script: |
+         npm install set fund false
+         set cache .npm
 
   - job: SnykScan
     displayName: 'Snyk Security Scan'

@@ -49,13 +49,14 @@ stages:
 
   - stage: CodeReview
     dependsOn: UnitTests
+    condition: succeeded()
     jobs:
     - job: PRJob
-      displayName: 'Code Review'
+      displayName: 'Pull request'
       steps:
       - script: |
            echo "Create a Pull Request for Code Review"
            echo "Notify Scrum Master and Product Owner for approval"
-           displayName: 'Create Pull Request and Notify Approvers'
-
+        displayName: 'Create Pull Request and Notify Approvers'
+  
    

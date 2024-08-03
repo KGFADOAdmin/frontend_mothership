@@ -37,13 +37,15 @@ stages:
       
 
   - stage: UnitTests
-    dependsOn: Build
     jobs:
-    - job: TestJob
-      displayName: 'Unit Tests'
-      steps:
-       - script: npm run test --watch=false --loglevel verbose --single
-         displayName: 'Run Unit Tests'
+      - job: UnitTests
+        displayName: 'Run Unit Tests'
+        steps:
+        - task: PublishTestResults@2
+          inputs:
+            testResultsFormat: 'JUnit'
+            testResultsFiles: '**/*.xml'
+          displayName: 'Publish Test Results'
 
   - stage: CodeReview
     dependsOn: UnitTests

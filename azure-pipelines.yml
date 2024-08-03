@@ -22,7 +22,7 @@ stages:
     - script: |
          npm install set fund false
          set cache .npm
-         ci
+         
          
       displayName: 'Install Dependencies'
     

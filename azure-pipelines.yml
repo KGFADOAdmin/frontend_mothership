@@ -42,7 +42,7 @@ stages:
     - job: TestJob
       displayName: 'Unit Tests'
       steps:
-       - script: npm tests
+       - script: npm run test --watch=false --loglevel verbose --single
          displayName: 'Run Unit Tests'
 
   - stage: CodeReview

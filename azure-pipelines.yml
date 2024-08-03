@@ -1,97 +1,60 @@
-# Trigger pipeline on any branch push
 trigger:
-  branches:
-    include:
-      - '*'
-pr:
-  branches:
-    include:
-      - develop
-variables: 
-  dotnetSdkVersion: '6.x'
-  buildConfiguration: 'Release'
-  releaseBranchName: 'release'
-  
- # Build Stage
+- develop
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+variables:
+  SNYK_AUTH_TOKEN: $(SNYK_AUTH_TOKEN) # Set this variable in your pipeline settings
+
 stages:
-  - stage: 'Build'
-    displayName: 'Build Stage'
-    jobs: 
-    - job: 'build'
-      displayName: 'Build job'
-      pool:
-       vmImage: 'ubuntu-20.04'
-      steps:
-      - task: NodeTool@0
-        inputs:
-         versionSpec: '14.x'  # Node version
-        displayName: 'Install Node.js'
-      - script: npm install
-        displayName: 'Install Dependencies'
+- stage: BuildAndScan
+  displayName: 'Build and Security Scan'
+  jobs:
+  - job: Build
+    displayName: 'Build the project'
+    steps:
+    - task: UseDotNet@2
+      inputs:
+        packageType: 'sdk'
+        version: '5.x' # Replace with the appropriate .NET SDK version
+        installationPath: $(Agent.ToolsDirectory)/dotnet
 
-      - script: npm build
-        displayName: 'Build Application'
-      - script: npm test
-        displayName: 'Run Unit Tests'
+    - script: dotnet build --configuration Release
+      displayName: 'Build the project'
 
-  
-    - job: SecurityScan
-      displayName: Securityscan
-      dependsOn: Build
-      condition: succeeded()
-      pool:
-        vmImage: ubuntu-latest
-        steps:
-        - task: UseDotNet@2
-          displayName: 'Use .NET SDK $(dotnetSdkVersion)'
-          inputs:
-           version: '$(dotnetSdkVersion)'
-        - job: Test
-        dependsOn: SecurityScan  # Run tests after build completes
-        condition: succeeded()  # Only run tests if build succeeds
-        pool:
-         vmImage: ubuntu-latest
-
-  # Test Stage
-  - stage: Test
-    displayName: 'Unit Test Stage'
+  - job: SnykScan
+    displayName: 'Snyk Security Scan'
     dependsOn: Build
-    jobs:
-      - job: UnitTests
-        displayName: 'Run Unit Tests'
-        steps:
-        - task: PublishTestResults@2
-          inputs:
-            testResultsFormat: 'JUnit'
-            testResultsFiles: '**/test-results.xml'
-          displayName: 'Publish Test Results'
-        
+    steps:
+    - script: |
+        echo "Running Snyk security scan"
+        snyk auth $SNYK_AUTH_TOKEN
+        snyk test --severity-threshold=high --json > snyk-results.json
+      displayName: 'Run Snyk Scan'
 
-        
+    - script: |
+        cat snyk-results.json
+        severityCount=$(jq '.vulnerabilities | map(select(.severity=="high" or .severity=="critical")) | length' snyk-results.json)
+        if [ "$severityCount" -gt 0 ]; then
+          echo "Critical vulnerabilities found!"
+          exit 1
+        fi
+      displayName: 'Check for Critical Vulnerabilities'
 
-          
-
-  # Packaging Stage
-  - stage: Package
-    displayName: 'Packaging Stage'
-    dependsOn: Test
-    jobs:
-      - job: Package
-        displayName: 'Package Job'
-        pool:
-          vmImage: 'ubuntu-latest'
-        steps:
-          - task: CopyFiles@2
-            inputs:
-              contents: '**/bin/Release/**'
-              targetFolder: '$(Build.ArtifactStagingDirectory)'
-            displayName: 'Copy build artifacts'
-
-          - task: PublishBuildArtifacts@1
-            inputs:
-              PathtoPublish: '$(Build.ArtifactStagingDirectory)'
-              ArtifactName: 'drop'
-              publishLocation: Container
-             
-            displayName: 'Publish artifacts'
-
+- stage: NotifyAndApproval
+  displayName: 'Notify and Approval'
+  dependsOn: BuildAndScan
+  condition: succeeded()
+  jobs:
+  - job: Notify
+    displayName: 'Notify Scrum Master/Product Owner'
+   
+  - job: Approval
+    displayName: 'Approval to Proceed'
+    dependsOn: Notify
+    steps:
+    - script: |
+        echo "Approval required to proceed to testing environment."
+        # Implement the approval step here (e.g., manual intervention, gate approval)
+      displayName: 'Manual Approval Step'

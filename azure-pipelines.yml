@@ -7,9 +7,6 @@ trigger:
 pool:
   vmImage: 'ubuntu-latest'
 
-  branches:
-    include:
-      - develop
 variables: 
   dotnetSdkVersion: '6.x'
   buildConfiguration: 'Release'

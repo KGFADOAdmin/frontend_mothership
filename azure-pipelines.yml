@@ -19,7 +19,7 @@ stages:
 - stage: BuildAndTest
   displayName: 'Build and Test'
   jobs:
-  - job: Build
+  - job: BuildAndTest
     pool:
       vmImage: 'ubuntu-latest'
     steps:
@@ -40,7 +40,7 @@ stages:
       displayName: 'Run Unit Tests'
   - job: SnykScan
     displayName: 'SnykScan'
-    dependsOn: 'Build'
+    dependsOn: 'BuildAndTest'
     condition: succeeded() # Only proceed if the Build and Test stage is successful
     pool:
       vmImage: ubuntu-latest

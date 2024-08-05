@@ -41,6 +41,7 @@ jobs:
   - script: |
          npm install set fund false
          set cache .npm
+         
 
   - script: |
       echo "Running Snyk security scan"

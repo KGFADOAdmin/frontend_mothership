@@ -31,9 +31,13 @@ jobs:
   - script: |
          npm install set fund false
          set cache .npm
+
+- job: UnitTest   
+  displayName: 'Unit Test'  
+  dependsOn: 'Build'
+  steps:    
   - script: npm run build
     displayName: 'Build Application'
-
   - script: npm test
     displayName: 'Run Unit Tests'
   

@@ -22,7 +22,7 @@ jobs:
   steps:
   - task: NodeTool@0
     inputs:
-      versionSpec: '18.x' # Specify the Node.js version
+      versionSpec: '22.x' # Specify the Node.js version
       checkLatest: true
 
   - script: npm install
@@ -43,8 +43,8 @@ jobs:
 
   - script: |
       echo "Running Snyk security scan"
-      npm install -g snyk
-      snyk auth $SNYK_AUTH_TOKEN
+      npm install -g snyk set fund false
+      snyk auth $SNYK_AUTH
       snyk test --severity-threshold=high --json > snyk-results.json
     displayName: 'Run Snyk Scan'
 

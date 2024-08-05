@@ -24,6 +24,7 @@ jobs:
     inputs:
       versionSpec: '22.x' # Specify the Node.js version
       checkLatest: true
+  
 
   - script: npm install
     displayName: 'Install Dependencies'
@@ -47,14 +48,6 @@ jobs:
       
       snyk test --severity-threshold=high --json > snyk-results.json
     displayName: 'Run Snyk Scan'
+ 
 
-  - script: |
-      echo "Checking for Critical Vulnerabilities"
-      cat snyk-results.json
-      severityCount=$(jq '.vulnerabilities | map(select(.severity=="high" or .severity=="critical")) | length' snyk-results.json)
-      if [ "$severityCount" -gt 0 ]; then
-        echo "Critical vulnerabilities found!"
-        return 0
-      fi
-    displayName: 'Check for Critical Vulnerabilities'
-
+  

@@ -21,14 +21,24 @@ jobs:
   steps:
   - task: NodeTool@0
     inputs:
-      versionSpec: '14.x' # Specify the Node.js version
+      versionSpec: '18.x' # Specify the Node.js version
       checkLatest: true
 
   - script: npm install
     displayName: 'Install Dependencies'
 
+  - script: npm i sharp
+    displayName: 'install image optimizer'
+
+  - script: |
+         npm install set fund false
+         set cache .npm
+  
   - script: npm run build
     displayName: 'Build the Project'
+  - script: |
+         npm install set fund false
+         set cache .npm
 
   - script: |
       echo "Running Snyk security scan"

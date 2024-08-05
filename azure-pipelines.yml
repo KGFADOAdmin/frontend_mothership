@@ -36,10 +36,7 @@ jobs:
     displayName: 'Build Application'
   
   - script: |
-       npm uninstall -g create-react-app
-       npm rm -g create-react-app
-       npm install -g create-react-app
-       npx create-react-app my-app
+       npm test
        npm run test --watch=false --loglevel verbose --single
     displayName: 'Run Unit Tests'
 

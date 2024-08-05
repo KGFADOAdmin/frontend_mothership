@@ -8,7 +8,6 @@ pr:
     include:
       - features/*
       - develop
-
 pool:
   vmImage: 'ubuntu-latest'
 
@@ -31,18 +30,9 @@ jobs:
   - script: |
          npm install set fund false
          set cache .npm
-  
   - script: |
       npm run build
     displayName: 'npm build'
-  
-  - task: PublishTestResults@1
-    inputs:
-      testResultsFiles: '**/test-results.xml'
-    displayName: 'Publish Test Results'
-    condition: 'succeededOrFailed()'
-    
-  
 
 - job: SnykScan
   displayName: 'Snyk Security Scan'
@@ -52,7 +42,6 @@ jobs:
         echo "Running Snyk security scan"
         npm install -g snyk 
         npm config set fund false
-        
     displayName: 'Run Snyk Scan'
 
          

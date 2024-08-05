@@ -13,7 +13,8 @@ pool:
   vmImage: 'ubuntu-latest'
 
 variables:
-  SNYK_AUTH_TOKEN: $(SNYK_AUTH_TOKEN) # Securely store this in Azure DevOps pipeline variables
+  SNYK_AUTH: '45678901'
+  SNYK_AUTH_TOKEN: $(SNYK_AUTH) # Securely store this in Azure DevOps pipeline variables
 
 jobs:
 - job: BuildAndScan

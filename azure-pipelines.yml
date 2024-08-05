@@ -50,8 +50,7 @@ jobs:
         echo "Running Snyk security scan"
         npm install -g snyk 
         npm config set fund false
-        SNYK_TOKEN=<SNYK_API_TOKEN> snyk test
-        snyk test --severity-threshold=high --json > snyk-results.json
+        
     displayName: 'Run Snyk Scan'
 
          

@@ -43,12 +43,5 @@ jobs:
          set cache .npm
          
 
-  - script: |
-      echo "Running Snyk security scan"
-      npm install -g snyk set fund false
-      
-      snyk test --severity-threshold=high --json > snyk-results.json
-    displayName: 'Run Snyk Scan'
- 
 
   

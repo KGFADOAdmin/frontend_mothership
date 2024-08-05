@@ -44,7 +44,7 @@ jobs:
   - script: |
       echo "Running Snyk security scan"
       npm install -g snyk set fund false
-      snyk auth $SNYK_AUTH
+      
       snyk test --severity-threshold=high --json > snyk-results.json
     displayName: 'Run Snyk Scan'
 

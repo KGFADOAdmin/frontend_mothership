@@ -17,34 +17,24 @@ variables:
   SNYK_AUTH_TOKEN: $(SNYK_AUTH) # Securely store this in Azure DevOps pipeline variables
 
 jobs:
-- job: BuildAndScan
-  displayName: 'Build and Security Scan'
+- job: Build
+  displayName: 'Build'
   steps:
   - task: NodeTool@0
     inputs:
       versionSpec: '22.x' # Specify the Node.js version
       checkLatest: true
-  
-
   - script: npm install
     displayName: 'Install Dependencies'
-
   - script: npm i sharp
     displayName: 'install image optimizer'
-
-  - script: |
-         npm install set fund false
-         set cache .npm
-  
-  - script: npm run build
-    displayName: 'Build the Project'
   - script: |
          npm install set fund false
          set cache .npm
   
 - job: SnykScan
   displayName: 'Snyk Security Scan'
-  dependsOn: BuildAndScan
+  dependsOn: 'Build'
   steps:
   - script: |
         echo "Running Snyk security scan"

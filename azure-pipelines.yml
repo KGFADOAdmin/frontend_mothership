@@ -19,7 +19,7 @@ stages:
 - stage: BuildAndTest
   displayName: 'Build and Test'
   jobs:
-  - job: BuildAndTest
+  - job: Build
     pool:
       vmImage: 'ubuntu-latest'
     steps:
@@ -38,17 +38,13 @@ stages:
         npm audit fix set fund false
         npm ci test 
       displayName: 'Run Unit Tests'
-
-- stage: SecurityScan
-  displayName: 'Static Code Analysis and Security Scanning'
-  jobs:
-   - job: 'SnykSecurityScan'
-     displayName: 'Snyk Security Scan'
-     pool:
-      vmImage: 'ubuntu-latest'
-
-  
-     steps:
+  - job: SnykScan
+    displayName: 'SnykScan'
+    dependsOn: 'Build'
+    condition: succeeded() # Only proceed if the Build and Test stage is successful
+    pool:
+      vmImage: ubuntu-latest
+    steps:
      - script: |
         echo "Running Snyk security scan"
         npm install -g snyk 

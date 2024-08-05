@@ -36,7 +36,7 @@ jobs:
     displayName: 'Build Application'
   
   - script: |
-       npm test
+       npm watch
        npm run test --watch=false --loglevel verbose --single
     displayName: 'Run Unit Tests'
 

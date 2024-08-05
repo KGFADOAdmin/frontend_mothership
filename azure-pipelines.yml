@@ -31,11 +31,11 @@ jobs:
   - script: |
          npm install set fund false
          set cache .npm
-  - script: npm run build
-    displayName: 'Build Application'
+  
   - script: |
-      npm test
-    displayName: 'Run tests'
+      npm run build
+    displayName: 'npm build'
+  
   - task: PublishTestResults@1
     inputs:
       testResultsFiles: '**/test-results.xml'

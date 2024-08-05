@@ -31,14 +31,18 @@ jobs:
   - script: |
          npm install set fund false
          set cache .npm
-
   - script: npm run build
     displayName: 'Build Application'
-  
   - script: |
-       npm watch
-       npm run test --watch=false --loglevel verbose --single
-    displayName: 'Run Unit Tests'
+      npm test
+    displayName: 'Run tests'
+  - task: PublishTestResults@1
+    inputs:
+      testResultsFiles: '**/test-results.xml'
+    displayName: 'Publish Test Results'
+    condition: 'succeededOrFailed()'
+    
+  
 
 - job: SnykScan
   displayName: 'Snyk Security Scan'

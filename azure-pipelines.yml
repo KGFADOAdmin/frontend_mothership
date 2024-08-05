@@ -1,59 +1,49 @@
-
-# Trigger pipeline on any branch push
 trigger:
   branches:
     include:
-      - '*'
+      - features/*
+
+pr:
+  branches:
+    include:
+      - features/*
+      - develop
+
 pool:
   vmImage: 'ubuntu-latest'
 
-variables: 
-  dotnetSdkVersion: '6.x'
-  buildConfiguration: 'Release'
-  releaseBranchName: 'release'
-  
- # Build Stage
-stages:
-  - stage: 'Build'
-    displayName: 'Build Stage'
-    jobs: 
-    - job: 'build'
-      displayName: 'Build job'
-      pool:
-       vmImage: 'ubuntu-20.04'
-      steps:
-      - task: NodeTool@0
-        inputs:
-         versionSpec: '14.x'  # Node version
-        displayName: 'Install Node.js'
-      - script: npm install
-        displayName: 'Install Dependencies'
+variables:
+  SNYK_AUTH_TOKEN: $(SNYK_AUTH_TOKEN) # Securely store this in Azure DevOps pipeline variables
 
-      - script: npm build
-        displayName: 'Build Application'
-      
+jobs:
+- job: BuildAndScan
+  displayName: 'Build and Security Scan'
+  steps:
+  - task: NodeTool@0
+    inputs:
+      versionSpec: '14.x' # Specify the Node.js version
+      checkLatest: true
 
-  - stage: UnitTests
-    jobs:
-      - job: UnitTests
-        displayName: 'Run Unit Tests'
-        steps:
-        - task: PublishTestResults@2
-          inputs:
-            testResultsFormat: 'JUnit'
-            testResultsFiles: '**/*.xml'
-          displayName: 'Publish Test Results'
+  - script: npm install
+    displayName: 'Install Dependencies'
 
-  - stage: CodeReview
-    dependsOn: UnitTests
-    condition: succeeded()
-    jobs:
-    - job: PRJob
-      displayName: 'Pull request'
-      steps:
-      - script: |
-           echo "Create a Pull Request for Code Review"
-           echo "Notify Scrum Master and Product Owner for approval"
-        displayName: 'Create Pull Request and Notify Approvers'
-  
-   
+  - script: npm run build
+    displayName: 'Build the Project'
+
+  - script: |
+      echo "Running Snyk security scan"
+      npm install -g snyk
+      snyk auth $SNYK_AUTH_TOKEN
+      snyk test --severity-threshold=high --json > snyk-results.json
+    displayName: 'Run Snyk Scan'
+
+  - script: |
+      echo "Checking for Critical Vulnerabilities"
+      cat snyk-results.json
+      severityCount=$(jq '.vulnerabilities | map(select(.severity=="high" or .severity=="critical")) | length' snyk-results.json)
+      if [ "$severityCount" -gt 0 ]; then
+        echo "Critical vulnerabilities found!"
+        exit 1
+      fi
+    displayName: 'Check for Critical Vulnerabilities'
+

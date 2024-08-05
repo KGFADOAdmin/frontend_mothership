@@ -50,3 +50,33 @@ stages:
         npm install -g snyk 
         npm config set fund false
        displayName: 'Run Snyk Scan'
+
+- stage: TestDeployment
+  displayName: 'Test Environment Deployment'
+  dependsOn: BuildAndTest
+  condition: succeeded()
+  jobs:
+  - deployment: DeployToTest
+    displayName: 'Deploy to Test Environment'
+    environment: 'Test' # Define the environment in Azure DevOps
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - script: |
+              echo "Deploying to Test Environment"
+              # Add deployment scripts/commands here (e.g., ARM templates, Kubernetes manifests)
+            displayName: 'Deploy Application'
+            
+          - script: |
+              echo "Running Integration Tests"
+              # Command to run integration tests
+            displayName: 'Run Integration Tests'
+          - script: |
+              echo "Running System Tests"
+              # Command to run system tests
+            displayName: 'Run System Tests'
+
+          - script: |
+              echo "Generating Test Results"
+              # Generate and publish test reports (use tasks like PublishTestResults@2)

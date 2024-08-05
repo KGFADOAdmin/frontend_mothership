@@ -31,11 +31,14 @@ jobs:
   - script: |
          npm install set fund false
          set cache .npm
+
   - script: npm run build
     displayName: 'Build Application'
-  - script: npm test
-    displayName: 'Run Unit Tests'
   
+  - script: |
+      npm run test --watch=false --loglevel verbose --single
+    displayName: 'Run Unit Tests'
+
 - job: SnykScan
   displayName: 'Snyk Security Scan'
   dependsOn: 'Build'

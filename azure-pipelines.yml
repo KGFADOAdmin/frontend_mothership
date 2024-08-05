@@ -35,7 +35,7 @@ jobs:
     displayName: 'npm build'
   - script: |
       npm audit fix set fund false
-      npm ci. set fund false
+      npm ci set fund false
       npm test set fund false
     displayName: 'Run Unit Tests'
 

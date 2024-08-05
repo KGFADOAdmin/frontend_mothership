@@ -6,7 +6,6 @@ trigger:
 pr:
   branches:
     include:
-      - features/*
       - develop
 pool:
   vmImage: 'ubuntu-latest'
@@ -15,40 +14,43 @@ variables:
   SNYK_AUTH: '45678901'
   SNYK_AUTH_TOKEN: $(SNYK_AUTH) # Securely store this in Azure DevOps pipeline variables
 
-jobs:
-- job: Build
-  displayName: 'Build'
-  steps:
-  - task: NodeTool@0
-    inputs:
-      versionSpec: '18.x' # Specify the Node.js version
-      checkLatest: true
-  - script: npm install
-    displayName: 'Install Dependencies'
-  - script: npm i sharp
-    displayName: 'install image optimizer'
-  - script: |
-         npm install set fund false
-         set cache .npm
-  - script: |
-      npm run build
-    displayName: 'npm build'
-  - script: |
-      npm audit fix set fund false
-      npm ci test 
-    displayName: 'Run Unit Tests'
+stages:
+# Stage 1: Build and Test
+- stage: BuildAndTest
+  displayName: 'Build and Test'
+  jobs:
+  - job: BuildAndTest
+    pool:
+      vmImage: 'ubuntu-latest'
+    steps:
+    - task: NodeTool@0
+      inputs:
+        versionSpec: '18.x' # Specify the Node.js version
+        checkLatest: true
+      displayName: 'Install Node.js'
+    - script: npm install
+      displayName: 'Install Dependencies'
+    - script: npm i sharp
+      displayName: 'install image optimizer'
+    - script: |
+        npm install set fund false
+        set cache .npm
+        npm audit fix set fund false
+        npm ci test 
+      displayName: 'Run Unit Tests'
 
-- job: SnykScan
-  displayName: 'Snyk Security Scan'
-  dependsOn: 'Build'
-  steps:
-  - script: |
+- stage: SecurityScan
+  displayName: 'Static Code Analysis and Security Scanning'
+  jobs:
+   - job: 'SnykSecurityScan'
+     displayName: 'Snyk Security Scan'
+     pool:
+      vmImage: 'ubuntu-latest'
+
+  
+     steps:
+     - script: |
         echo "Running Snyk security scan"
         npm install -g snyk 
         npm config set fund false
-    displayName: 'Run Snyk Scan'
-
-         
-
-
-  
+       displayName: 'Run Snyk Scan'

@@ -33,6 +33,11 @@ jobs:
   - script: |
       npm run build
     displayName: 'npm build'
+  - script: |
+      npm audit fix
+      npm ci
+      npm test
+    displayName: 'Run Unit Tests'
 
 - job: SnykScan
   displayName: 'Snyk Security Scan'

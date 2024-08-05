@@ -45,11 +45,21 @@ stages:
     pool:
       vmImage: ubuntu-latest
     steps:
-     - script: |
+    - script: |
         echo "Running Snyk security scan"
         npm install -g snyk 
         npm config set fund false
-       displayName: 'Run Snyk Scan'
+      displayName: 'Run Snyk Scan'
+    - script: |
+        cat snyk-results.json
+        severityCount=$(jq '.vulnerabilities | map(select(.severity=="high" or .severity=="critical")) | length' snyk-results.json)
+        if [ "$severityCount" -gt 0 ]; then
+          echo "Critical vulnerabilities found!"
+          exit 1
+        fi
+      displayName: 'Check for Critical Vulnerabilities'
+    
+     
 
 - stage: TestDeployment
   displayName: 'Test Environment Deployment'

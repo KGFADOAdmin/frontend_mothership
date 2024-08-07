@@ -38,6 +38,8 @@ stages:
         npm audit fix set fund false
         npm ci test 
       displayName: 'Run Unit Tests'
+ 
+ # Step 2 integrate security scans into the CI/CD pipeline.
   - job: SnykScan
     displayName: 'SnykScan'
     dependsOn: 'BuildAndTest'
@@ -58,9 +60,24 @@ stages:
           exit 1
         fi
       displayName: 'Check for Critical Vulnerabilities'
-    
-     
+    - task: PublishTestResults@2
+      inputs:
+        testResultsFormat: 'JUnit'
+        testResultsFiles: '**/test-results.xml'
+      displayName: 'Publish Test Results'
 
+    - script: npm run package
+      displayName: 'Package Application'
+
+    - task: PublishBuildArtifacts@1
+      inputs:
+        PathtoPublish: 'dist'
+        ArtifactName: 'drop'
+        publishLocation: 'Container'
+      displayName: 'Publish Build Artifacts'
+
+
+# Testing Environment Deployment   
 - stage: TestDeployment
   displayName: 'Test Environment Deployment'
   dependsOn: BuildAndTest
@@ -76,8 +93,7 @@ stages:
           - script: |
               echo "Deploying to Test Environment"
               # Add deployment scripts/commands here (e.g., ARM templates, Kubernetes manifests)
-            displayName: 'Deploy Application'
-            
+            displayName: 'Deploy Application'     
           - script: |
               echo "Running Integration Tests"
               # Command to run integration tests
@@ -90,3 +106,5 @@ stages:
           - script: |
               echo "Generating Test Results"
               # Generate and publish test reports (use tasks like PublishTestResults@2)
+    
+      

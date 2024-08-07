@@ -52,13 +52,7 @@ stages:
         npm install -g snyk 
         npm config set fund false
       displayName: 'Run Snyk Scan'
-    - task: PublishBuildArtifacts@1
-      inputs:
-        PathtoPublish: 'snyk-results.json'
-        ArtifactName: 'snyk-report'
-        publishLocation: 'Container'
-        TargetPath: $(System.DefaultWorkingDirectory)/snyk-report
-      displayName: 'Publish Snyk Scan Results'
+   
     - script: |
         cat snyk-results.json
         severityCount=$(jq '.vulnerabilities | map(select(.severity=="high" or .severity=="critical")) | length' snyk-results.json)
@@ -71,14 +65,9 @@ stages:
       inputs:
         testResultsFormat: 'JUnit'
         testResultsFiles: '**/test-results.xml'
-      
       displayName: 'Publish Test Results'
 
-    - task: PublishBuildArtifacts@1
-      inputs:
-        targetPath: $(System.DefaultWorkingDirectory)/bin/WebApp
-        artifactName: WebApp 
-      displayName: 'Publish Build Artifacts'
+    
 
 # Testing Environment Deployment   
 - stage: TestDeployment

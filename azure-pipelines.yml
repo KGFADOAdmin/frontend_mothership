@@ -52,6 +52,12 @@ stages:
         npm install -g snyk 
         npm config set fund false
       displayName: 'Run Snyk Scan'
+    - task: PublishBuildArtifacts@1
+      inputs:
+        PathtoPublish: 'snyk-results.json'
+        ArtifactName: 'snyk-report'
+        publishLocation: 'Container'
+      displayName: 'Publish Snyk Scan Results'
     - script: |
         cat snyk-results.json
         severityCount=$(jq '.vulnerabilities | map(select(.severity=="high" or .severity=="critical")) | length' snyk-results.json)

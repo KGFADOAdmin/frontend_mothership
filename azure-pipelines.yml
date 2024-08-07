@@ -15,9 +15,9 @@ variables:
   SNYK_AUTH_TOKEN: $(SNYK_AUTH) # Securely store this in Azure DevOps pipeline variables
 
 stages:
-# Stage 1: Build Unit Test and SNYK
+# Stage 1: Build UnitTest and SNYK
 - stage: BuildAndTest
-  displayName: 'Build and Test'
+  displayName: 'Build UnitTest && SNYK SCAN'
   jobs:
   - job: BuildAndTest
     pool:
@@ -64,13 +64,15 @@ stages:
       inputs:
         testResultsFormat: 'JUnit'
         testResultsFiles: '**/test-results.xml'
+      
       displayName: 'Publish Test Results'
 
     - task: PublishBuildArtifacts@1
       inputs:
         PathtoPublish: 'dist'
         ArtifactName: 'drop'
-        publishLocation: 'Container'
+        publishLocation: FilePath  
+    - publish: $(System.DefaultWorkingDirectory)/bin/WebApp
       displayName: 'Publish Build Artifacts'
 
 

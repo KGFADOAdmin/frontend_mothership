@@ -57,6 +57,7 @@ stages:
         PathtoPublish: 'snyk-results.json'
         ArtifactName: 'snyk-report'
         publishLocation: 'Container'
+        TargetPath: $(System.DefaultWorkingDirectory)/snyk-report
       displayName: 'Publish Snyk Scan Results'
     - script: |
         cat snyk-results.json

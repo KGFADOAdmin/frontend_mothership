@@ -38,6 +38,13 @@ stages:
         npm audit fix set fund false
         npm ci test 
       displayName: 'Run Unit Tests'
+    - task: PublishTestResults@2
+      inputs:
+        testResultsFormat: 'JUnit'
+        searchFolder: --junit-directory/reports
+        testResultsFiles: '**/test-results.xml'
+      displayName: 'Publish Test Results'
+
  
  # Step 2 integrate security scans into the CI/CD pipeline.
   - job: SnykScan
@@ -61,11 +68,7 @@ stages:
           exit 1
         fi
       displayName: 'Check for Critical Vulnerabilities'
-    - task: PublishTestResults@2
-      inputs:
-        testResultsFormat: 'JUnit'
-        testResultsFiles: '**/test-results.xml'
-      displayName: 'Publish Test Results'
+  
 
     
 

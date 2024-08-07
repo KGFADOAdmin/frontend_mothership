@@ -75,7 +75,6 @@ stages:
     - publish: $(System.DefaultWorkingDirectory)/bin/WebApp
       displayName: 'Publish Build Artifacts'
 
-
 # Testing Environment Deployment   
 - stage: TestDeployment
   displayName: 'Test Environment Deployment'

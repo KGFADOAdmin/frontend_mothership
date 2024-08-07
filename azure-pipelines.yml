@@ -17,7 +17,7 @@ variables:
 stages:
 # Stage 1: Build UnitTest and SNYK
 - stage: BuildAndTest
-  displayName: 'Build UnitTest && SNYK SCAN'
+  displayName: 'Build Test & SNYKSCAN'
   jobs:
   - job: BuildAndTest
     pool:

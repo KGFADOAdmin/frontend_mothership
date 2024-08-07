@@ -69,12 +69,8 @@ stages:
 
     - task: PublishBuildArtifacts@1
       inputs:
-        PathtoPublish: 'dist'
-        ArtifactName: 'drop'
         targetPath: $(System.DefaultWorkingDirectory)/bin/WebApp
-        
-
-    
+        artifactName: WebApp 
       displayName: 'Publish Build Artifacts'
 
 # Testing Environment Deployment   

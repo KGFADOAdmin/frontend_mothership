@@ -67,7 +67,6 @@ stages:
         echo "Running Snyk security scan"
         npm install -g snyk 
         npm config set fund false
-        workingDir: src/reports
       displayName: 'Run Snyk Scan'
    
     - script: |

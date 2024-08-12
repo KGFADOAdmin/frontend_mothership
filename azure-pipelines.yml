@@ -102,4 +102,37 @@ stages:
               echo "Generating Test Results"
               # Generate and publish test reports (use tasks like PublishTestResults@2)
     
-      
+- stage: Staging
+  displayName: 'Deploy to Staging'
+  dependsOn: BuildAndTest
+  jobs:
+  - deployment: DeployToStaging
+    displayName: 'Deploy to Staging'
+    environment: 'staging'
+    pool:
+     vmImage: 'ubuntu-latest'
+    strategy:
+          runOnce:
+            deploy:
+              steps:
+                - task: DownloadBuildArtifacts@0
+                  inputs:
+                    buildType: 'current'
+                    artifactName: 'drop'
+
+                - script: |
+                    echo "Deploying to Staging..."
+                    # Replace with actual deployment script
+                  displayName: 'Deploy to Staging'
+
+                - script: |
+                    echo "Conduct UAT..."
+                    # Replace with actual UAT commands if any
+                  displayName: 'Conduct UAT'
+              
+                - script: |
+                    echo "Collecting feedback and bug reports..."
+                    # Replace with actual commands to collect feedback
+                  displayName: 'Collect Feedback and Bugs'
+
+

@@ -116,13 +116,7 @@ stages:
           runOnce:
             deploy:
               steps:
-              - task: DownloadBuildArtifacts@1
-                inputs:
-                  buildType: 'current'
-                  downloadType: 'single'
-                  artifactName: 'kgfapp'
-                  downloadPath: '$(System.ArtifactsDirectory)'
-                  extractTars: true
+             
               - script: |
                     echo "Deploying to Staging..."
                     # Replace with actual deployment script

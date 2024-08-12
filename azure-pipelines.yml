@@ -33,6 +33,7 @@ stages:
       displayName: 'Install Node.js'
     - script: npm install
       displayName: 'Install Dependencies'
+      
     - script: npm i sharp
       displayName: 'install image optimizer'
     - script: |
@@ -40,13 +41,10 @@ stages:
         set cache .npm
         npm audit fix set fund false
         npm ci test 
+        workingDir: src/reports
       displayName: 'Run Unit Tests'
 
-    - task: DeleteFiles@1
-      displayName: 'Delete JUnit files'
-      inputs:
-       SourceFolder: src/reports
-       Contents: 'TEST*.xml'
+   
 
     - task: PublishTestResults@2
       inputs:
@@ -68,6 +66,7 @@ stages:
         echo "Running Snyk security scan"
         npm install -g snyk 
         npm config set fund false
+        workingDir: src/reports
       displayName: 'Run Snyk Scan'
    
     - script: |

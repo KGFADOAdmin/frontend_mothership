@@ -13,6 +13,9 @@ pool:
 variables:
   SNYK_AUTH: '45678901'
   SNYK_AUTH_TOKEN: $(SNYK_AUTH) # Securely store this in Azure DevOps pipeline variables
+  variables:
+  buildConfiguration: 'Release'
+  ngBuildConfiguration: '--prod'
 
 stages:
 # Stage 1: Build UnitTest and SNYK
@@ -38,10 +41,17 @@ stages:
         npm audit fix set fund false
         npm ci test 
       displayName: 'Run Unit Tests'
+
+    - task: DeleteFiles@1
+      displayName: 'Delete JUnit files'
+      inputs:
+       SourceFolder: src/reports
+       Contents: 'TEST*.xml'
+
     - task: PublishTestResults@2
       inputs:
         testResultsFormat: 'JUnit'
-        searchFolder: --junit-directory/reports
+        searchFolder: src/reports
         testResultsFiles: 'TEST-*.xml'
       displayName: 'Publish Test Results'
 

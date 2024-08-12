@@ -17,7 +17,7 @@ variables:
   pBuildConfiguration: '--prod'
 
 stages:
-# Stage 1: Build UnitTest and SNYK
+# Stage 1: Build & UnitTest
 - stage: BuildAndTest
   displayName: 'Build Test & SNYKSCAN'
   jobs:

@@ -9,7 +9,6 @@ pr:
       - develop
 pool:
   vmImage: 'ubuntu-latest'
-
 variables:
   SNYK_AUTH: '45678901'
   SNYK_AUTH_TOKEN: $(SNYK_AUTH) # Securely store this in Azure DevOps pipeline variables
@@ -32,22 +31,16 @@ stages:
         checkLatest: true
       displayName: 'Install Dependencies'
     - script: npm i sharp
-    
       displayName: 'install image optimizer'
     - script: |
         npm config set fund false --location=global
         npm install 
         set cache .npm
         npm audit fix 
-  
       displayName: 'Install Node.js'
     - script: npm install
-
       displayName: 'Run Unit Tests'
     - script: npm ci test
-
-   
-
     - task: PublishTestResults@2
       inputs:
         testResultsFormat: 'JUnit'
@@ -57,10 +50,14 @@ stages:
 
  
  # Step 2 integrate security scans into the CI/CD pipeline.
+- stage: SnykScanforvulnerability
+  displayName: 'SnykScan for vulnerability'
+  jobs:
+  - job:
+    pool:
+      vmImage: ubuntu-latest
   - job: SnykScan
     displayName: 'SnykScan'
-    dependsOn: 'BuildAndTest'
-    condition: succeeded() # Only proceed if the Build and Test stage is successful
     pool:
       vmImage: ubuntu-latest
     steps:
@@ -69,7 +66,6 @@ stages:
         echo "Running Snyk security scan"
         npm install -g snyk 
       displayName: 'Run Snyk Scan'
-   
     - script: |
         cat snyk-results.json
         severityCount=$(jq '.vulnerabilities | map(select(.severity=="high" or .severity=="critical")) | length' snyk-results.json)
@@ -79,8 +75,6 @@ stages:
         fi
       displayName: 'Check for Critical Vulnerabilities'
   
-
-    
 
 # Testing Environment Deployment   
 - stage: TestDeployment

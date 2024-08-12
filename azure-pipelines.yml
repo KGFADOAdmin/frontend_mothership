@@ -116,28 +116,25 @@ stages:
           runOnce:
             deploy:
               steps:
-                - task: DownloadBuildArtifacts@0
-                  inputs:
-                    buildType: current
-                    project: 'ft-demo'
-                    pipeline: 'Pipelinename or PipelineID'
-                    artifactName: 'kgffronterapp'
-                    downloadPath:  '$(System.ArtifactsDirectory)'
-
-                - script: |
+              - task: DownloadBuildArtifacts@1
+                inputs:
+                  buildType: 'current'
+                  downloadType: 'single'
+                  artifactName: 'kgfapp'
+                  downloadPath: '$(System.ArtifactsDirectory)'
+                  extractTars: true
+              - script: |
                     echo "Deploying to Staging..."
                     # Replace with actual deployment script
-                  displayName: 'Deploy to Staging'
-
-                - script: |
+                displayName: 'Deploy to Staging'
+              - script: |
                     echo "Conduct UAT..."
                     # Replace with actual UAT commands if any
-                  displayName: 'Conduct UAT'
-              
-                - script: |
+                displayName: 'Conduct UAT'
+              - script: |
                     echo "Collecting feedback and bug reports..."
                     # Replace with actual commands to collect feedback
-                  displayName: 'Collect Feedback and Bugs'
+                displayName: 'Collect Feedback and Bugs'
 
 - stage: SecurityScan
   displayName: 'Final Security Scanning'

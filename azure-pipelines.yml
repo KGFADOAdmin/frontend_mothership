@@ -121,8 +121,11 @@ stages:
               steps:
                 - task: DownloadBuildArtifacts@0
                   inputs:
-                    buildType: 'current'
-                    artifactName: 'drop'
+                    buildType: specific
+                    project: 'projectname'
+                    pipeline: 'Pipelinename or PipelineID'
+                    artifactName: 'myapp'
+                    downloadPath: '$(Build.ArtifactsDirectory)'
 
                 - script: |
                     echo "Deploying to Staging..."

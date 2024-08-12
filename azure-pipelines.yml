@@ -14,8 +14,8 @@ variables:
   SNYK_AUTH: '45678901'
   SNYK_AUTH_TOKEN: $(SNYK_AUTH) # Securely store this in Azure DevOps pipeline variables
   variables:
-  buildConfiguration: 'Release'
-  ngBuildConfiguration: '--prod'
+  rbuildConfiguration: 'Release'
+  pBuildConfiguration: '--prod'
 
 stages:
 # Stage 1: Build UnitTest and SNYK
@@ -35,9 +35,10 @@ stages:
     
       displayName: 'install image optimizer'
     - script: |
-        npm install set fund false
+        npm config set fund false --location=global
+        npm install 
         set cache .npm
-        npm audit fix set fund false
+        npm audit fix 
   
       displayName: 'Install Node.js'
     - script: npm install
@@ -64,9 +65,9 @@ stages:
       vmImage: ubuntu-latest
     steps:
     - script: |
+        npm config set fund false --location=global
         echo "Running Snyk security scan"
         npm install -g snyk 
-        npm config set fund false
       displayName: 'Run Snyk Scan'
    
     - script: |

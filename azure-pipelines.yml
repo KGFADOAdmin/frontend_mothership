@@ -19,7 +19,7 @@ variables:
 stages:
 # Stage 1: Build & UnitTest
 - stage: BuildAndTest
-  displayName: 'Build & UnitTest'
+  displayName: 'Build & UnitTest & SnykScan'
   jobs:
   - job: BuildAndTest
     pool:
@@ -27,7 +27,7 @@ stages:
     steps:
     - task: NodeTool@0
       inputs:
-        versionSpec: '18.x' # Specify the Node.js version
+        versionSpec: '14.x' # Specify the Node.js version
         checkLatest: true
       displayName: 'Install Dependencies'
     - script: npm i sharp

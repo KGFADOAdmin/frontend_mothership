@@ -167,7 +167,7 @@ stages:
   
 - stage: Production
   displayName: 'Deploy to Production'
-  dependsOn: Staging
+  dependsOn: SecurityScan
   condition: succeeded()
   jobs:
   - deployment: DeployToProduction

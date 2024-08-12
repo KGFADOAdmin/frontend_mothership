@@ -32,6 +32,7 @@ stages:
         checkLatest: true
       displayName: 'Install Dependencies'
     - script: npm i sharp
+    
       displayName: 'install image optimizer'
     - script: |
         npm install set fund false

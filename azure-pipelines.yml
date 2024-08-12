@@ -121,11 +121,11 @@ stages:
               steps:
                 - task: DownloadBuildArtifacts@0
                   inputs:
-                    buildType: specific
+                    buildType: current
                     project: 'ft-demo'
                     pipeline: 'Pipelinename or PipelineID'
-                    artifactName: 'myapp'
-                    downloadPath: '$(Build.ArtifactsDirectory)'
+                    artifactName: 'kgffronterapp'
+                    downloadPath:  '$(System.ArtifactsDirectory)'
 
                 - script: |
                     echo "Deploying to Staging..."

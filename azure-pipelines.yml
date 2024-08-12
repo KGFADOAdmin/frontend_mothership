@@ -122,7 +122,7 @@ stages:
                 - task: DownloadBuildArtifacts@0
                   inputs:
                     buildType: specific
-                    project: 'projectname'
+                    project: 'ft-demo'
                     pipeline: 'Pipelinename or PipelineID'
                     artifactName: 'myapp'
                     downloadPath: '$(Build.ArtifactsDirectory)'

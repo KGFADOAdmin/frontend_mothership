@@ -50,9 +50,6 @@ stages:
 
  
  # Step 2 integrate security scans into the CI/CD pipeline.
-- stage: SnykScanforvulnerability
-  displayName: 'SnykScan for vulnerability'
-  jobs:
   - job:
     pool:
       vmImage: ubuntu-latest

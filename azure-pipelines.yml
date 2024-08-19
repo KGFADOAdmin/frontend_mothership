@@ -59,10 +59,24 @@ stages:
       vmImage: ubuntu-latest
     steps:
     - script: |
+        php -version
+        cd mothership/
+        composer install --no-interaction --prefer-dist
+      displayName: 'Composer Install for Security Scan'
+ 
+    - script: |
         npm config set fund false --location=global
         echo "Running Snyk security scan"
         npm install -g snyk 
       displayName: 'Run Snyk Scan'
+    - task: SnykSecurityScan@1
+      inputs:
+        serviceConnectionEndpoint: 'KgfServiceConnection'
+        testType: 'code'
+        failOnIssues: false
+        projectName: 'Kindlegate-Foundation-CoWorkDesk/Test_Kindlegate_Mothership'
+        organization: 'ca818e28-49d2-4fdf-a4fc-d5968c300514'
+      displayName: 'Snyk Security Scan'
     - script: |
         cat snyk-results.json
         severityCount=$(jq '.vulnerabilities | map(select(.severity=="high" or .severity=="critical")) | length' snyk-results.json)
@@ -71,7 +85,7 @@ stages:
           exit 1
         fi
       displayName: 'Check for Critical Vulnerabilities'
-  
+   
 
 # Testing Environment Deployment   
 - stage: TestDeployment

@@ -41,13 +41,6 @@ stages:
     - script: npm install
       displayName: 'Run Unit Tests'
     - script: npm ci test
-    - task: PublishTestResults@2
-      inputs:
-        testResultsFormat: 'JUnit'
-        searchFolder: src/reports
-        testResultsFiles: 'TEST-*.xml'
-      displayName: 'Publish Test Results'
-
  
  # Step 2 integrate security scans into the CI/CD pipeline.
   - job:
@@ -69,14 +62,6 @@ stages:
         echo "Running Snyk security scan"
         npm install -g snyk 
       displayName: 'Run Snyk Scan'
-    - task: SnykSecurityScan@1
-      inputs:
-        serviceConnectionEndpoint: 'KgfServiceConnection'
-        testType: 'code'
-        failOnIssues: false
-        projectName: 'Kindlegate-Foundation-CoWorkDesk/Test_Kindlegate_Mothership'
-        organization: 'ca818e28-49d2-4fdf-a4fc-d5968c300514'
-      displayName: 'Snyk Security Scan'
     - script: |
         cat snyk-results.json
         severityCount=$(jq '.vulnerabilities | map(select(.severity=="high" or .severity=="critical")) | length' snyk-results.json)

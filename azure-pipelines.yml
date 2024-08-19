@@ -66,34 +66,14 @@ stages:
         cat snyk-results.json
         severityCount=$(jq '.vulnerabilities | map(select(.severity=="high" or .severity=="critical")) | length' snyk-results.json)
         if [ "$severityCount" -gt 0 ]; then
-          echo "Critical vulnerabilities found!"
-          exit 1
-        fi
-      displayName: 'Check for Critical Vulnerabilities'
+          echo "Critical vulnenotifyUsers: 'awogao@gmail.com'
+    
    
-- stage: NotifyStage
-  displayName: 'Notification Stage'
-  dependsOn: BuildAndTest
-  condition: succeeded()  # Run this stage if the previous stage succeeds
-  jobs:
-  - job: EmailNotification
-    displayName: 'Send Email Notification'
-    steps:
-    - task: PowerShell@2
-      displayName: 'Send email notification for pending approval'
-      inputs:
-        targetType: 'inline'
-        script: |
-          $smtpServer = "smtp.example.com"
-          $smtpFrom = "awogao@gmail.com"
-          $smtpTo = "awogao@gmail.com"
-          $messageSubject = "Approval Pending for Azure Pipeline"
-          $messageBody = "An Azure Pipeline is awaiting your approval."
-          
-          $smtp = New-Object Net.Mail.SmtpClient($smtpServer)
-          $smtp.Send($smtpFrom, $smtpTo, $messageSubject, $messageBody)
+# Step 5: Approval to proceed to the testing environment
+  
 
-# Testing Environment Deployment   
+     
+
 - stage: TestDeployment
   displayName: 'Test Environment Deployment'
   dependsOn: BuildAndTest

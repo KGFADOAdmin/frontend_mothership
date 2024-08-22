@@ -54,7 +54,7 @@ stages:
     - script: |
         php -version
         cd mothership/
-        composer install --no-interaction --prefer-dist
+       
       displayName: 'Composer Install for Security Scan'
  
     - script: |

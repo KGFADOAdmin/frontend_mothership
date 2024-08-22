@@ -5,6 +5,7 @@
 *.tfstate
 *.tfstate.*
 node_modules/@next/swc-darwin-x64/next-swc.darwin-x64.node
+*.vsidx
 node_modules*
 # Crash log files
 crash.log

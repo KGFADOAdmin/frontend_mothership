@@ -116,6 +116,7 @@ stages:
                   echo "Deploying to Staging..."
                   # Replace with actual deployment script
                   mkdir codedesk && cd codedesk
+                  pwd
                   git clone 'https://github.com/KGFADOAdmin/frontend_mothership.git'
                   npm i sharp
                   npm audit fix --force

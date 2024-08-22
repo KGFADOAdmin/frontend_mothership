@@ -54,17 +54,11 @@ stages:
     pool:
       vmImage: ubuntu-latest
     steps:
- 
     - script: |
         npm config set fund false --location=global
         echo "Running Snyk security scan"
         npm install -g snyk 
       displayName: 'Run Snyk Scan'
-    - script: |
-       
-        severityCount=$(jq '.vulnerabilities | map(select(.severity=="high" or .severity=="critical")) | length' snyk-results.json)
-        if [ "$severityCount" -gt 0 ]; then
-          echo "Critical vulnenotifyUsers: 'awogao@gmail.com'
     
    
 # Step 5: Approval to proceed to the testing environment

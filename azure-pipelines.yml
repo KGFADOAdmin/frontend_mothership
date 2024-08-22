@@ -40,8 +40,9 @@ stages:
       displayName: 'Install Node.js'
       
     - script: |
-       npm ci test
        npm audit fix --force
+       npm ci test
+       
       displayName: 'Run Unit Tests'
  
  # Step 2 integrate security scans into the CI/CD pipeline.

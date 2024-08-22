@@ -33,9 +33,9 @@ stages:
     - script: npm i sharp
       displayName: 'install image optimizer'
     - script: |
+        npm audit fix --force
         npm config set fund false --location=global
         set cache .npm
-        npm audit fix --force
         npm install
       displayName: 'Install Node.js'
       

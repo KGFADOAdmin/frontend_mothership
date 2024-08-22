@@ -110,8 +110,18 @@ stages:
               steps:
              
               - script: |
-                    echo "Deploying to Staging..."
+                  echo "Deploying to Staging..."
                     # Replace with actual deployment script
+                  - script: |
+                  echo "Deploying to Staging..."
+                  # Replace with actual deployment script
+                  mkdir codedesk && cd codedesk
+                  git clone 'https://github.com/KGFADOAdmin/frontend_mothership.git'
+                  npm i sharp
+                  npm audit fix --force
+                  npm config set fund false --location=global
+                  set cache .npm
+                  npm install
                 displayName: 'Deploy to Staging'
               - script: |
                     echo "Conduct UAT..."

@@ -60,7 +60,7 @@ stages:
         npm install -g snyk 
       displayName: 'Run Snyk Scan'
     - script: |
-        cat snyk-results.json
+       
         severityCount=$(jq '.vulnerabilities | map(select(.severity=="high" or .severity=="critical")) | length' snyk-results.json)
         if [ "$severityCount" -gt 0 ]; then
           echo "Critical vulnenotifyUsers: 'awogao@gmail.com'

@@ -51,11 +51,6 @@ stages:
     pool:
       vmImage: ubuntu-latest
     steps:
-    - script: |
-        php -version
-        cd mothership/
-       
-      displayName: 'Composer Install for Security Scan'
  
     - script: |
         npm config set fund false --location=global

@@ -36,11 +36,13 @@ stages:
         npm config set fund false --location=global
         npm install 
         set cache .npm
-        npm audit fix 
+        npm audit fix --force
       displayName: 'Install Node.js'
     - script: npm install
       displayName: 'Run Unit Tests'
-    - script: npm ci test
+    - script: |
+       npm ci test
+       npm audit fix --force
  
  # Step 2 integrate security scans into the CI/CD pipeline.
   - job:

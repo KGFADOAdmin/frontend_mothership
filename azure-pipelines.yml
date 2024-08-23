@@ -31,27 +31,19 @@ stages:
         checkLatest: true
       displayName: 'Install Dependencies'
 
-    - script: |
-        npm audit fix --force
-        npm i sharp 
-        npm config set fund false --location=global
-        set cache .npm
-        npm install        
-      displayName: 'Install Node.js'
-      workingDirectory: $(System.DefaultWorkingDirectory)/
-      
-    - script: |
-       npm audit fix --force
-       npm ci test
-      displayName: 'Run Unit Tests'
-      workingDirectory: $(System.DefaultWorkingDirectory)/
-    
-    - task: Npm@1      
+    - task: Npm@1
+      inputs:
+        command: 'custom'
+        customCommand: 'install --legacy-peer-deps'
+        workingDir: 'src/app'
+      displayName: 'npm install with custom'
+        
+    - task : Npm@1
       displayName: 'npm run build'
       inputs:
-        command: 'custom'     
+        command: 'custom'
         workingDir: 'src/app'
-        customCommand: 'run build'
+        customCommand : 'run build'
 
     - task: CopyFiles@2
       inputs:

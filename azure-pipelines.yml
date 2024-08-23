@@ -101,11 +101,12 @@ stages:
         deploy:
           steps:
           - script: |
-                   templates/npm-steps.yml
-          
-
+               echo "Deploying to Test Environment"
+             # Add deployment scripts/commands here (e.g., ARM templates, Kubernetes manifests)
+            displayName: 'Deploy Application'
         
-          
+            
+
           - task: PublishTestResults@2
             displayName: Publish Test result
             inputs:

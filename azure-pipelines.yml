@@ -36,9 +36,7 @@ stages:
         npm i sharp 
         npm config set fund false --location=global
         set cache .npm
-        npm install
-        npm cache clean --force
-        npm install -g webpack
+        npm install        
       displayName: 'Install Node.js'
       workingDirectory: $(System.DefaultWorkingDirectory)/
       

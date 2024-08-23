@@ -31,6 +31,7 @@ stages:
         checkLatest: true
       displayName: 'Install Dependencies'
       
+
     - script: |
         npm audit fix --force
         npm i sharp 
@@ -45,6 +46,19 @@ stages:
        npm ci test
       displayName: 'Run Unit Tests'
       workingDirectory: $(System.DefaultWorkingDirectory)/tests
+    
+    - script: |
+        npm publish
+      displayName:  'publish apps'
+      workingDirectory: $(System.DefaultWorkingDirectory)/client
+    
+    - task: PublishBuildArtifacts@1
+      displayName: publish Artifacts
+      inputs:
+        PathtoPublish: '$(Build.ArtifacStagingDirectory'
+        ArtifactName: drop
+        publishLocation: Container
+    
  
  # Step 2 integrate security scans into the CI/CD pipeline.
   - job:
@@ -60,13 +74,10 @@ stages:
         echo "Running Snyk security scan"
         npm install -g snyk 
       displayName: 'Run Snyk Scan'
+      workingDirectory: $(System.DefaultWorkingDirectory)/synkscan
     
    
-# Step 5: Approval to proceed to the testing environment
-  
-
-     
-
+# Step 3: Approval to proceed to the testing environment
 - stage: TestDeployment
   displayName: 'Test Environment Deployment'
   dependsOn: BuildAndTest

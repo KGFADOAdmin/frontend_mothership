@@ -57,7 +57,7 @@ stages:
       inputs:
         buildType: specific
         project: 'ft-demo'
-        pipeline: 'KGFADOAdmin/frontend_mothership'
+        pipeline: 'frontend_mothership'
         artifactName: 'myapp'
         downloadPath: '$(Build.ArtifactsDirectory)'
     

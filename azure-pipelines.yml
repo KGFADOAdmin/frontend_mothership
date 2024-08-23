@@ -51,13 +51,6 @@ stages:
        workingDir: 'src/app'
       displayName: 'npm run build apps'
     
-    - task: CopyFiles@2
-      inputs:
-        SourceFolder: 'src/app'
-        Contents: '**/*'
-        TargetFolder: '$(Build.ArtifactStagingDirectory)'
-        CleanTargetFolder: true
-      displayName: 'Copy Artifact'
 
     - task: PublishBuildArtifacts@1
       displayName: 'Download Build Artifacts'

@@ -45,9 +45,11 @@ stages:
        npm ci test
       displayName: 'Run Unit Tests'
       workingDirectory: $(System.DefaultWorkingDirectory)/
+    
     - script: npm run build
       displayName: 'npm build apps'
-
+      workingDirectory: $(System.DefaultWorkingDirectory)/
+    
     - task: PublishBuildArtifacts@1
       displayName: Publish artifacts
       inputs:

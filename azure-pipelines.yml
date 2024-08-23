@@ -56,8 +56,8 @@ stages:
       displayName: 'Download Build Artifacts'
       inputs:
         buildType: specific
-        project: 'projectname'
-        pipeline: 'ft-demo'
+        project: 'ft-demo'
+        pipeline: 'KGFADOAdmin/frontend_mothership'
         artifactName: 'myapp'
         downloadPath: '$(Build.ArtifactsDirectory)'
     

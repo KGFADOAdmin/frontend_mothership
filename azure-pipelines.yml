@@ -45,12 +45,9 @@ stages:
        npm ci test
       displayName: 'Run Unit Tests'
       workingDirectory: $(System.DefaultWorkingDirectory)/
+    - script: npm run build
+      displayName: 'npm build apps'
 
-    - script: npm run build 
-      displayName: 'Build Next.js application'
-    
-    
-    
     - task: PublishBuildArtifacts@1
       displayName: Publish artifacts
       inputs:

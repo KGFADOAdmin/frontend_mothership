@@ -67,7 +67,7 @@ stages:
 
     - task: PublishPipelineArtifact@1
       inputs:
-        artifactName: 'www'
+        artifactName: 'drop'
         targetPath: '$(Build.ArtifactStagingDirectory)'        
     
  # Step 2 integrate security scans into the CI/CD pipeline.

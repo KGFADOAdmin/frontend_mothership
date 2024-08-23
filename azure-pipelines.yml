@@ -47,7 +47,7 @@ stages:
       workingDirectory: $(System.DefaultWorkingDirectory)/
     
     - script: |
-        npm publish
+        
       displayName:  'publish apps'
       workingDirectory: $(System.DefaultWorkingDirectory)/
     

@@ -101,8 +101,7 @@ stages:
         deploy:
           steps:
           - script: |
-              echo "Deploying to Test Environment"
-               templates/npm-steps.yml
+                   templates/npm-steps.yml
           
 
         

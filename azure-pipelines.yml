@@ -44,6 +44,17 @@ stages:
         command: 'custom'
         workingDir: 'src/app'
         customCommand : 'run build'
+    - task: Npm@1
+      displayName: 'Run Test'
+      env:
+        CI: true
+      inputs:
+       workingDir: 'src/app'
+       command: custom
+       customCommand: 'run test-ci'
+   
+      
+
 
     - task: CopyFiles@2
       inputs:
@@ -95,7 +106,7 @@ stages:
             displayName: 'Deploy Application'     
           - script: |
               echo "Running Integration Tests"
-              # Command to run integration tests
+              
             displayName: 'Run Integration Tests'
           - script: |
               echo "Running System Tests"

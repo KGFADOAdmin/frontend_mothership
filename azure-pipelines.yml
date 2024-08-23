@@ -49,6 +49,8 @@ stages:
     - script: |
         npm run build
       displayName: 'npm build'      
+      workingDirectory: 'src/app'
+      
     
     - task: CopyFiles@2
       inputs:

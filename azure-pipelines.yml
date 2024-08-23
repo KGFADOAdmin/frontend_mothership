@@ -52,15 +52,6 @@ stages:
       displayName: 'npm run build apps'
       
     
-    - task: PublishBuildArtifacts@1
-      displayName: Publish artifacts
-      inputs:
-        PathtoPublish: '$(Build.ArtifactStagingDirectory)'
-        ArtifactName: 'drop'
-        publishLocation: 'Container'
-  
-   
-
  # Step 2 integrate security scans into the CI/CD pipeline.
   - job:
     pool:

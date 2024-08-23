@@ -92,7 +92,7 @@ stages:
           steps:
           - script: |
               echo "Deploying to Test Environment"
-              # Add deployment scripts/commands here (e.g., ARM templates, Kubernetes manifests)
+              
             displayName: 'Deploy Application'     
           - script: |
               echo "Running Integration Tests"

@@ -102,19 +102,8 @@ stages:
           steps:
           - script: |
               echo "Deploying to Test Environment"
-          # Stop the VirtualBox VM
+               templates/npm-steps.yml
           
-          - script: |
-               echo "Stopping VirtualBox VM..."
-                VBoxManage controlvm "olu-VirtualBox" acpipowerbutton
-            displayName: "Stop VirtualBox VM"
-
-          - script: |
-             echo "Deploying application to VirtualBox VM..."
-             # Replace the following with your specific paths and commands
-                 scp -r ./path/to/your/package olu@192.168.1.75:/var/www/
-                 ssh olu@192.168.1.75 'sudo systemctl restart apache2'  # Or the service your app uses
-            displayName: "Deploy to VirtualBox VM"
 
         
           

@@ -50,7 +50,22 @@ stages:
       inputs:
        workingDir: 'src/app'
       displayName: 'npm run build apps'
-      
+    
+    - task: CopyFiles@2
+      inputs:
+        SourceFolder: 'src/app/build'
+        Contents: '**/*'
+        TargetFolder: '$(Build.ArtifactStagingDirectory)'
+        CleanTargetFolder: true
+      displayName: 'Copy Artifact'
+
+    - task: PublishBuildArtifacts@1
+      displayName: 'Download Build Artifacts'
+      inputs:
+       PathtoPublish: $(Build.ArtifactStagingDirectory)'
+       ArtifactName: 'drop'
+       publishLocation: Container
+
     
  # Step 2 integrate security scans into the CI/CD pipeline.
   - job:

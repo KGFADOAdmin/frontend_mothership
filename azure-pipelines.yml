@@ -74,7 +74,7 @@ stages:
         echo "Running Snyk security scan"
         npm install -g snyk 
       displayName: 'Run Snyk Scan'
-      workingDirectory: $(System.DefaultWorkingDirectory)/synkscan
+      workingDirectory: $(System.DefaultWorkingDirectory)/
     
    
 # Step 3: Approval to proceed to the testing environment

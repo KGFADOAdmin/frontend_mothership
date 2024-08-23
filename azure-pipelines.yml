@@ -30,20 +30,21 @@ stages:
         versionSpec: '18.x' # Specify the Node.js version
         checkLatest: true
       displayName: 'Install Dependencies'
-    - script: npm i sharp
-      displayName: 'install image optimizer'
+      
     - script: |
         npm audit fix --force
+        npm i sharp 
         npm config set fund false --location=global
         set cache .npm
         npm install
       displayName: 'Install Node.js'
+      workingDirectory: $(System.DefaultWorkingDirectory)/api
       
     - script: |
        npm audit fix --force
        npm ci test
-       
       displayName: 'Run Unit Tests'
+      workingDirectory: $(System.DefaultWorkingDirectory)/tests
  
  # Step 2 integrate security scans into the CI/CD pipeline.
   - job:

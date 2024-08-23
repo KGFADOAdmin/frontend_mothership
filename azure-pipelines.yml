@@ -102,21 +102,31 @@ stages:
           steps:
           - script: |
               echo "Deploying to Test Environment"
-              
-            displayName: 'Deploy Application'     
-          - script: |
-              echo "Running Integration Tests"
-              
-            displayName: 'Run Integration Tests'
-          - script: |
-              echo "Running System Tests"
-              # Command to run system tests
-            displayName: 'Run System Tests'
+          
+          - task: AzureAppServiceManage@0
+            inputs:
+              azureSubscription: 
+              Action: Stop Azure App Service
+              WebAppName: $(olu-VirtualBox)
+          
+          - task: AzureRmWebAppDeployment@4
+            displayName: 'Deploy to Test'
+            inputs:
+              ConnectionType:  AzureRM
+              azureSubscription: ''
+              appType: 'webApp'
+              WebAppName: $()
+              packageForLinux: '$()'
 
-          - script: |
-              echo "Generating Test Results"
-              # Generate and publish test reports (use tasks like PublishTestResults@2)
-    
+          - task: PublishTestResults@2
+            displayName: Publish Test result
+            inputs:
+              testResultsFormat: 'JUnit'
+              testResultsFiles: '**/TEST-*.xml'
+              #searchFolder: '$(System.DefaultWorkingDirectory)'
+              searchFolder: 'src/app'
+          
+            
 - stage: Staging
   displayName: 'Deploy to Staging'
   dependsOn: BuildAndTest
@@ -130,8 +140,6 @@ stages:
           runOnce:
             deploy:
               steps:
-              
-            
               - script: |
                    templates/npm-steps.yml
                     echo "Conduct UAT..."

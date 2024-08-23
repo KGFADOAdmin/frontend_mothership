@@ -47,9 +47,10 @@ stages:
       workingDirectory: $(System.DefaultWorkingDirectory)/
     
     - script: |
-        
-      displayName:  'publish apps'
+       npm run build 
+      displayName:  'build apps'
       workingDirectory: $(System.DefaultWorkingDirectory)/
+    
     
     - task: PublishBuildArtifacts@1
       displayName: Publish artifacts

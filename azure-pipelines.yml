@@ -39,18 +39,18 @@ stages:
         set cache .npm
         npm install
       displayName: 'Install Node.js'
-      workingDirectory: $(System.DefaultWorkingDirectory)/api
+      workingDirectory: $(System.DefaultWorkingDirectory)/
       
     - script: |
        npm audit fix --force
        npm ci test
       displayName: 'Run Unit Tests'
-      workingDirectory: $(System.DefaultWorkingDirectory)/tests
+      workingDirectory: $(System.DefaultWorkingDirectory)/
     
     - script: |
         npm publish
       displayName:  'publish apps'
-      workingDirectory: $(System.DefaultWorkingDirectory)/client
+      workingDirectory: $(System.DefaultWorkingDirectory)/
     
     - task: PublishBuildArtifacts@1
       displayName: publish Artifacts

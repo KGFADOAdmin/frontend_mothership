@@ -104,10 +104,22 @@ stages:
                echo "Deploying to Test Environment"
              # Add deployment scripts/commands here (e.g., ARM templates, Kubernetes manifests)
             displayName: 'Deploy Application'
-          # Stop the VirtualBox VM
           
-       
-            
+          - task: AzureAppServiceManage@0
+            inputs:
+              azureSubscription:  
+              Action: Stop Azure App Service
+              WebAppName: 
+          
+          - task: AzureRmWebAppDeployment@4
+            displayName: 'Deploy to Test'
+            inputs:
+              ConnectionType:  AzureRM
+              azureSubscription: ''
+              appType: 'webApp'
+              WebAppName: 
+              packageForLinux: 
+          
           - task: PublishTestResults@2
             displayName: Publish Test result
             inputs:

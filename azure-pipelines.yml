@@ -102,22 +102,22 @@ stages:
           steps:
           - script: |
               echo "Deploying to Test Environment"
+          # Stop the VirtualBox VM
           
-          - task: AzureAppServiceManage@0
-            inputs:
-              azureSubscription: 
-              Action: Stop Azure App Service
-              WebAppName: $(olu-VirtualBox)
-          
-          - task: AzureRmWebAppDeployment@4
-            displayName: 'Deploy to Test'
-            inputs:
-              ConnectionType:  AzureRM
-              azureSubscription: ''
-              appType: 'webApp'
-              WebAppName: $()
-              packageForLinux: '$()'
+          - script: |
+               echo "Stopping VirtualBox VM..."
+                VBoxManage controlvm "olu-VirtualBox" acpipowerbutton
+            displayName: "Stop VirtualBox VM"
 
+          - script: |
+             echo "Deploying application to VirtualBox VM..."
+             # Replace the following with your specific paths and commands
+                 scp -r ./path/to/your/package olu@192.168.1.75:/var/www/
+                 ssh olu@192.168.1.75 'sudo systemctl restart apache2'  # Or the service your app uses
+            displayName: "Deploy to VirtualBox VM"
+
+        
+          
           - task: PublishTestResults@2
             displayName: Publish Test result
             inputs:

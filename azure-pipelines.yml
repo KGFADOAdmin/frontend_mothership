@@ -51,15 +51,15 @@ stages:
       displayName:  'publish apps'
       workingDirectory: $(System.DefaultWorkingDirectory)/
     
-   
-    - task: DownloadBuildArtifacts@1
-      displayName: 'Download Build Artifacts'
+    - task: PublishBuildArtifacts@1
+      displayName: Publish artifacts
       inputs:
-        buildType: specific
-        project: 'ft-demo'
-        pipeline: 'pipelineName or PipelineID'
-        artifactName: 'myapp'
-        downloadPath: '$(Build.ArtifactsDirectory)'
+        PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+        ArtifactName: 'drop'
+        publishLocation: 'Container'
+  
+   
+   
     
  
  # Step 2 integrate security scans into the CI/CD pipeline.

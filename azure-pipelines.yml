@@ -46,12 +46,13 @@ stages:
       displayName: 'Run Unit Tests'
       workingDirectory: $(System.DefaultWorkingDirectory)/
     
-    - script: |
-        npm run build
-      displayName: 'npm build'      
-      workingDirectory: 'src/app'
-      
-    
+    - task: Npm@1      
+      displayName: 'npm run build'
+      inputs:
+        command: 'custom'     
+        workingDir: 'src/app'
+        customCommand: 'run build'
+
     - task: CopyFiles@2
       inputs:
         sourceFolder: '$(Build.SourcesDirectory)'

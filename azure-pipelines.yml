@@ -37,6 +37,8 @@ stages:
         npm config set fund false --location=global
         set cache .npm
         npm install
+        npm cache clean --force
+        npm install -g webpack
       displayName: 'Install Node.js'
       workingDirectory: $(System.DefaultWorkingDirectory)/
       

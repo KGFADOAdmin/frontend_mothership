@@ -57,6 +57,7 @@ stages:
       inputs:
         buildType: specific
         project: 'ft-demo'
+        pipeline: 'pipelineName or PipelineID'
         artifactName: 'myapp'
         downloadPath: '$(Build.ArtifactsDirectory)'
     

@@ -30,7 +30,6 @@ stages:
         versionSpec: '18.x' # Specify the Node.js version
         checkLatest: true
       displayName: 'Install Dependencies'
-      
 
     - script: |
         npm audit fix --force
@@ -120,30 +119,21 @@ stages:
           runOnce:
             deploy:
               steps:
-             
+              - task: DownloadBuildArtifacts@1
+                displayName: Download artifacts
+                inputs:
+                  buildType: current
+                  downloadPath: single
+                  artifactName:  drop
+                  downloadType: single
+                  checkDownloadedFiles: true
+            
               - script: |
-                  echo "Deploying to Staging..."
-                    # Replace with actual deployment script
-                  - script: |
-                  echo "Deploying to Staging..."
-                  # Replace with actual deployment script
-                  mkdir codedesk && cd codedesk
-                  pwd
-                  git clone 'https://github.com/KGFADOAdmin/frontend_mothership.git'
-                  npm i sharp
-                  npm audit fix --force
-                  npm config set fund false --location=global
-                  set cache .npm
-                  npm install
-                displayName: 'Deploy to Staging'
-              - script: |
+                   templates/npm-steps.yml
                     echo "Conduct UAT..."
                     # Replace with actual UAT commands if any
                 displayName: 'Conduct UAT'
-              - script: |
-                    echo "Collecting feedback and bug reports..."
-                    # Replace with actual commands to collect feedback
-                displayName: 'Collect Feedback and Bugs'
+              
 
 - stage: SecurityScan
   displayName: 'Final Security Scanning'

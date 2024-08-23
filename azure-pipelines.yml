@@ -53,7 +53,7 @@ stages:
     
     - task: CopyFiles@2
       inputs:
-        SourceFolder: 'src/app/build'
+        SourceFolder: 'src/app'
         Contents: '**/*'
         TargetFolder: '$(Build.ArtifactStagingDirectory)'
         CleanTargetFolder: true

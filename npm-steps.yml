@@ -3,7 +3,6 @@
         versionSpec: '18.x' # Specify the Node.js version
         checkLatest: true
       displayName: 'Install Dependencies'
-      
 
     - script: |
         npm audit fix --force
@@ -12,22 +11,23 @@
         set cache .npm
         npm install
       displayName: 'Install Node.js'
-      workingDirectory: $(System.DefaultWorkingDirectory)/api
+      workingDirectory: $(System.DefaultWorkingDirectory)/
       
     - script: |
        npm audit fix --force
        npm ci test
       displayName: 'Run Unit Tests'
-      workingDirectory: $(System.DefaultWorkingDirectory)/tests
+      workingDirectory: $(System.DefaultWorkingDirectory)/
     
-    - script: |
-        npm publish
-      displayName:  'publish apps'
-      workingDirectory: $(System.DefaultWorkingDirectory)/client
+    - task: Npm@1
+      inputs:
+       workingDir: 'src/app'
+      displayName: 'npm run build apps'
+      
     
     - task: PublishBuildArtifacts@1
-      displayName: publish Artifacts
+      displayName: Publish artifacts
       inputs:
-        PathtoPublish: '$(Build.ArtifacStagingDirectory'
-        ArtifactName: drop
-        publishLocation: Container
+        PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+        ArtifactName: 'drop'
+        publishLocation: 'Container'

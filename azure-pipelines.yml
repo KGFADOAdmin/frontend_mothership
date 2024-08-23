@@ -60,9 +60,7 @@ stages:
         publishLocation: 'Container'
   
    
-   
-    
- 
+
  # Step 2 integrate security scans into the CI/CD pipeline.
   - job:
     pool:

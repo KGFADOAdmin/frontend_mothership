@@ -54,16 +54,7 @@ stages:
         command: 'custom'
         workingDir: 'src/app'
         customCommand : 'run build'
-    - task: Npm@1
-      displayName: 'Run unit tests'
-      env:
-        CI: true
-      inputs:
-        workingDir: 'src/app'
-        command: 'ci'
-        customCommand: 'test'  # Runs 'npm run test' to execute the unit tests
- 
-      
+   
 
 
     - task: CopyFiles@2

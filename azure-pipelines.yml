@@ -1,5 +1,4 @@
 trigger:
-<<<<<<< HEAD
 - develop
 
 pool:
@@ -14,7 +13,6 @@ stages:
   jobs:
   - job: Build
     displayName: 'Build the project'
-=======
   branches:
     include:
       - '*'
@@ -40,12 +38,10 @@ stages:
   - job: BuildAndTest
     pool:
       vmImage: 'ubuntu-latest'
->>>>>>> features
     steps:
     - task: NodeTool@0
       inputs:
         versionSpec: '18.x' # Specify the Node.js version
-<<<<<<< HEAD
         checkLatest: true       
          
       displayName: 'Install Dependencies'
@@ -85,7 +81,6 @@ stages:
 - stage: TestDeployment
   displayName: 'Test Environment Deployment'
   dependsOn: BuildAndScan
-=======
         checkLatest: true
       displayName: 'Install Dependencies'
     - script: npm i sharp
@@ -150,7 +145,6 @@ stages:
 - stage: TestDeployment
   displayName: 'Test Environment Deployment'
   dependsOn: BuildAndTest
->>>>>>> features
   condition: succeeded()
   jobs:
   - deployment: DeployToTest
@@ -161,7 +155,6 @@ stages:
         deploy:
           steps:
           - script: |
-<<<<<<< HEAD
               echo "Deploying to Test Environment"
               # Deployment script or command (e.g., Azure CLI, Kubernetes, etc.)
               # Example for a Node.js app deployment:
@@ -185,7 +178,6 @@ stages:
               failTaskOnFailedTests: true
             displayName: 'Publish Test Results'
 
-=======
                echo "Deploying to Test Environment"
              # Add deployment scripts/commands here (e.g., ARM templates, Kubernetes manifests)
             displayName: 'Deploy Application'
@@ -274,4 +266,3 @@ stages:
               subject: 'Production Deployment Status'
               body: 'Deployment to production was successful!'
             displayName: 'Send Success Notification'
->>>>>>> features

@@ -30,6 +30,13 @@ stages:
         versionSpec: '18.x' # Specify the Node.js version
         checkLatest: true
       displayName: 'Install Dependencies'
+    - script: npm i sharp
+      displayName: 'install image optimizer'
+    - script: |
+        npm config set fund false --location=global
+        set cache .npm
+        npm audit fix 
+        npm config ls -l
 
     - task: Npm@1
       inputs:

@@ -1,20 +1,4 @@
 trigger:
-<<<<<<< HEAD
-- develop
-
-pool:
-  vmImage: 'ubuntu-latest'
-
-variables:
-  SNYK_AUTH_TOKEN: $(SNYK_AUTH_TOKEN) # Securely store this in Azure DevOps pipeline variables
-
-stages:
-- stage: BuildAndScan
-  displayName: 'Build and Security Scan'
-  jobs:
-  - job: Build
-    displayName: 'Build the project'
-=======
   branches:
     include:
       - '*'
@@ -40,52 +24,10 @@ stages:
   - job: BuildAndTest
     pool:
       vmImage: 'ubuntu-latest'
->>>>>>> features
     steps:
     - task: NodeTool@0
       inputs:
         versionSpec: '18.x' # Specify the Node.js version
-<<<<<<< HEAD
-        checkLatest: true       
-         
-      displayName: 'Install Dependencies'
-    
-    - script: npm i sharp
-      displayName: 'install image optimizer'
-
-    - script: npm run build
-      displayName: 'Build the Project'
-      
-    - script: |
-         npm install set fund false
-         set cache .npm
-
-  - job: SnykScan
-    displayName: 'Snyk Security Scan'
-    dependsOn: Build
-    steps:
-    - script: |
-        echo "Running Snyk security scan"
-        npm install -g snyk 
-        npm config set fund false
-        SNYK_TOKEN=<SNYK_API_TOKEN> snyk test
-        snyk test --severity-threshold=high --json > snyk-results.json
-      displayName: 'Run Snyk Scan'
-
-    - script: |
-        echo "Checking for Critical Vulnerabilities"
-        cat snyk-results.json
-        severityCount=$(jq '.vulnerabilities | map(select(.severity=="high" or .severity=="critical")) | length' snyk-results.json)
-        if [ "$severityCount" -gt 0 ]; then
-          echo "Critical vulnerabilities found!"
-          exit 1
-        fi
-      displayName: 'Check for Critical Vulnerabilities'
-
-- stage: TestDeployment
-  displayName: 'Test Environment Deployment'
-  dependsOn: BuildAndScan
-=======
         checkLatest: true
       displayName: 'Install Dependencies'
     - script: npm i sharp
@@ -150,7 +92,6 @@ stages:
 - stage: TestDeployment
   displayName: 'Test Environment Deployment'
   dependsOn: BuildAndTest
->>>>>>> features
   condition: succeeded()
   jobs:
   - deployment: DeployToTest
@@ -161,7 +102,6 @@ stages:
         deploy:
           steps:
           - script: |
-<<<<<<< HEAD
               echo "Deploying to Test Environment"
               # Deployment script or command (e.g., Azure CLI, Kubernetes, etc.)
               # Example for a Node.js app deployment:
@@ -185,7 +125,6 @@ stages:
               failTaskOnFailedTests: true
             displayName: 'Publish Test Results'
 
-=======
                echo "Deploying to Test Environment"
              # Add deployment scripts/commands here (e.g., ARM templates, Kubernetes manifests)
             displayName: 'Deploy Application'
@@ -274,4 +213,3 @@ stages:
               subject: 'Production Deployment Status'
               body: 'Deployment to production was successful!'
             displayName: 'Send Success Notification'
->>>>>>> features

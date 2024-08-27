@@ -108,22 +108,22 @@ stages:
           - task: AzureAppServiceManage@0
             displayName: 'dev-kgf-01 Stop'
             inputs:
-              azureSubscription: 'kgf-serviceconnect-01'
+              azureSubscription: 'kgfwindows'
               Action: Stop Azure App Service
-              WebAppName: kgfwindows  
+              WebAppName: kgfwebOS  
           - task: AzureRmWebAppDeployment@4
             displayName: 'Deploy to Test'
             inputs:
               ConnectionType:  AzureRM
-              azureSubscription: 'kgf-serviceconnect-01'
+              azureSubscription: 'kgfwindows'
               appType: 'webApp'
-              WebAppName: kgfwindows
+              WebAppName: kgfwebOS
               packageForLinux: '$(Build.ArtifactStagingDirectory)'
               
           - task: AzureAppServiceManage@0
             displayName: 'dev-kgf-01 Start'
             inputs:
-              azureSubscription: 'kgf-serviceconnect-01'
+              azureSubscription: 'kgfwindows'
               Action: Start Azure App Service
               WebAppName: kgfwindows
           

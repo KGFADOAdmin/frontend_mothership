@@ -105,20 +105,21 @@ stages:
              # Add deployment scripts/commands here (e.g., ARM templates, Kubernetes manifests)
             displayName: 'Deploy Application'
           
-         # - task: AzureAppServiceManage@0
-          #  inputs:
-         #     azureSubscription:  ''
-          #    Action: Stop Azure App Service
-          #    WebAppName: ''
+          - task: AzureAppServiceManage@0
+            displayName: 'dev-kgf-01 Stop'
+            inputs:
+              azureSubscription:  ''
+              Action: Stop Azure App Service
+              WebAppName: $(dev-kgf-01)
           
-         # - task: AzureRmWebAppDeployment@4
-        #    displayName: 'Deploy to Test'
-         #   inputs:
-          #    ConnectionType:  AzureRM
-         #     azureSubscription: ''
-          #    appType: 'webApp'
-          #    WebAppName: ''
-          #    packageForLinux: ''
+          - task: AzureRmWebAppDeployment@4
+            displayName: 'Deploy to Test'
+            inputs:
+              ConnectionType:  AzureRM
+              azureSubscription: ''
+              appType: 'webApp'
+              WebAppName: $(dev-kgf-01)
+              packageForLinux: '$(Build.ArtifactStagingDirectory)/drop'
           
        #   - task: PublishTestResults@2
         #    displayName: Publish Test result

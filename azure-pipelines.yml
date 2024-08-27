@@ -119,6 +119,7 @@ stages:
               appType: 'webApp'
               WebAppName: kgf-webapp
               packageForLinux: '$(Build.ArtifactStagingDirectory)'
+              
           - task: AzureAppServiceManage@0
             displayName: 'dev-kgf-01 Start'
             inputs:
@@ -126,12 +127,7 @@ stages:
               Action: Start Azure App Service
               WebAppName: kgf-webapp
           
-          - task: PublishTestResults@2
-            displayName: Publish Test result
-            inputs:
-              testResultsFormat: 'JUnit'
-              testResultsFiles: '**/TEST-*.xml'
-              searchFolder: 'src/app'
+          
           
             
 - stage: Staging

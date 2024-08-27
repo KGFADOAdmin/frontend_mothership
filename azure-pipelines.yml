@@ -1,0 +1,277 @@
+trigger:
+<<<<<<< HEAD
+- develop
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+variables:
+  SNYK_AUTH_TOKEN: $(SNYK_AUTH_TOKEN) # Securely store this in Azure DevOps pipeline variables
+
+stages:
+- stage: BuildAndScan
+  displayName: 'Build and Security Scan'
+  jobs:
+  - job: Build
+    displayName: 'Build the project'
+=======
+  branches:
+    include:
+      - '*'
+
+pr:
+  branches:
+    include:
+      - develop
+pool:
+  vmImage: 'ubuntu-latest'
+variables:
+  SNYK_AUTH: '45678901'
+  SNYK_AUTH_TOKEN: $(SNYK_AUTH) # Securely store this in Azure DevOps pipeline variables
+  variables:
+  rbuildConfiguration: 'Release'
+  pBuildConfiguration: '--prod'
+
+stages:
+# Stage 1: Build & UnitTest
+- stage: BuildAndTest
+  displayName: 'Build & UnitTest & SnykScan'
+  jobs:
+  - job: BuildAndTest
+    pool:
+      vmImage: 'ubuntu-latest'
+>>>>>>> features
+    steps:
+    - task: NodeTool@0
+      inputs:
+        versionSpec: '18.x' # Specify the Node.js version
+<<<<<<< HEAD
+        checkLatest: true       
+         
+      displayName: 'Install Dependencies'
+    
+    - script: npm i sharp
+      displayName: 'install image optimizer'
+
+    - script: npm run build
+      displayName: 'Build the Project'
+      
+    - script: |
+         npm install set fund false
+         set cache .npm
+
+  - job: SnykScan
+    displayName: 'Snyk Security Scan'
+    dependsOn: Build
+    steps:
+    - script: |
+        echo "Running Snyk security scan"
+        npm install -g snyk 
+        npm config set fund false
+        SNYK_TOKEN=<SNYK_API_TOKEN> snyk test
+        snyk test --severity-threshold=high --json > snyk-results.json
+      displayName: 'Run Snyk Scan'
+
+    - script: |
+        echo "Checking for Critical Vulnerabilities"
+        cat snyk-results.json
+        severityCount=$(jq '.vulnerabilities | map(select(.severity=="high" or .severity=="critical")) | length' snyk-results.json)
+        if [ "$severityCount" -gt 0 ]; then
+          echo "Critical vulnerabilities found!"
+          exit 1
+        fi
+      displayName: 'Check for Critical Vulnerabilities'
+
+- stage: TestDeployment
+  displayName: 'Test Environment Deployment'
+  dependsOn: BuildAndScan
+=======
+        checkLatest: true
+      displayName: 'Install Dependencies'
+    - script: npm i sharp
+      displayName: 'install image optimizer'
+    - script: |
+        npm config set fund false --location=global
+        set cache .npm
+        npm audit fix 
+    - script: 'echo "$(Build.DefinitionName), $(Build.BuildId), $(Build.BuildNumber)" > buildinfo.txt'
+      displayName: 'Write build info'
+      workingDirectory: 'src/app'
+
+
+    - task: Npm@1
+      inputs:
+        command: 'custom'
+        customCommand: 'install --legacy-peer-deps'
+        workingDir: 'src/app'
+      displayName: 'npm install with custom'
+        
+    - task : Npm@1
+      displayName: 'npm run build'
+      inputs:
+        command: 'custom'
+        workingDir: 'src/app'
+        customCommand : 'run build'
+   
+
+
+    - task: CopyFiles@2
+      inputs:
+        sourceFolder: '$(Build.SourcesDirectory)'
+        contents: |
+            src/*
+            public/*
+        targetFolder: '$(Build.ArtifactStagingDirectory)'
+      displayName: 'Copy project files'
+
+    - task: PublishPipelineArtifact@1
+      inputs:
+        artifactName: 'drop'
+        targetPath: '$(Build.ArtifactStagingDirectory)'        
+    
+ # Step 2 integrate security scans into the CI/CD pipeline.
+  - job:
+    pool:
+      vmImage: ubuntu-latest
+  - job: SnykScan
+    displayName: 'SnykScan'
+    pool:
+      vmImage: ubuntu-latest
+    steps:
+    - script: |
+        npm config set fund false --location=global
+        echo "Running Snyk security scan"
+        npm install -g snyk 
+      displayName: 'Run Snyk Scan'
+      workingDirectory: $(System.DefaultWorkingDirectory)/
+    
+   
+# Step 3: Approval to proceed to the testing environment
+- stage: TestDeployment
+  displayName: 'Test Environment Deployment'
+  dependsOn: BuildAndTest
+>>>>>>> features
+  condition: succeeded()
+  jobs:
+  - deployment: DeployToTest
+    displayName: 'Deploy to Test Environment'
+    environment: 'Test' # Define the environment in Azure DevOps
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - script: |
+<<<<<<< HEAD
+              echo "Deploying to Test Environment"
+              # Deployment script or command (e.g., Azure CLI, Kubernetes, etc.)
+              # Example for a Node.js app deployment:
+              # az webapp deployment source config-zip --resource-group <resource-group> --name <app-name> --src <path-to-zip>
+            displayName: 'Deploy Application'
+            
+          - script: |
+              echo "Running Integration Tests"
+              npm run test:integration
+            displayName: 'Run Integration Tests'
+
+          - script: |
+              echo "Running System Tests"
+              npm run test:system
+            displayName: 'Run System Tests'
+
+          - task: PublishTestResults@2
+            inputs:
+              testResultsFiles: '**/test-results/*.xml'
+              testResultsFormat: 'JUnit'
+              failTaskOnFailedTests: true
+            displayName: 'Publish Test Results'
+
+=======
+               echo "Deploying to Test Environment"
+             # Add deployment scripts/commands here (e.g., ARM templates, Kubernetes manifests)
+            displayName: 'Deploy Application'
+          - task: AzureAppServiceManage@0
+            displayName: 'dev-kgf-01 Stop'
+            inputs:
+              azureSubscription: 'kgfwindows'
+              Action: Stop Azure App Service
+              WebAppName: kgfwebOS  
+          - task: AzureRmWebAppDeployment@4
+            displayName: 'Deploy to Test'
+            inputs:
+              ConnectionType:  AzureRM
+              azureSubscription: 'kgfwindows'
+              appType: 'webApp'
+              WebAppName: kgfwebOS
+              packageForLinux: '$(Build.ArtifactStagingDirectory)'
+              
+          - task: AzureAppServiceManage@0
+            displayName: 'dev-kgf-01 Start'
+            inputs:
+              azureSubscription: 'kgfwindows'
+              Action: Start Azure App Service
+              WebAppName: kgfwebOS
+          
+          
+          
+            
+- stage: Staging
+  displayName: 'Deploy to Staging'
+  dependsOn: BuildAndTest
+  jobs:
+  - deployment: DeployToStaging
+    displayName: 'Deploy to Staging'
+    environment: 'staging'
+    pool:
+     vmImage: 'ubuntu-latest'
+    strategy:
+          runOnce:
+            deploy:
+              steps:
+              - script: |
+                   templates/npm-steps.yml
+                    echo "Conduct UAT..."
+                    # Replace with actual UAT commands if any
+                displayName: 'Conduct UAT'
+              
+
+- stage: SecurityScan
+  displayName: 'Final Security Scanning'
+  dependsOn: Staging
+  condition: succeeded()
+  jobs:
+  - job: SnykScan
+    displayName: 'Run Snyk Scan'
+    pool:
+     vmImage: 'ubuntu-latest'
+    steps:
+    - script: |
+        npm config set fund false --location=global
+        echo "Running Snyk security scan"
+        npm install -g snyk 
+      displayName: 'Run Snyk Scan'
+  
+- stage: Production
+  displayName: 'Deploy to Production'
+  dependsOn: SecurityScan
+  condition: succeeded()
+  jobs:
+  - deployment: DeployToProduction
+    displayName: 'Deploy to Production'
+    environment: 'production'
+    pool:
+      vmImage: 'ubuntu-latest'
+      strategy:
+        runOnce:
+        deploy:
+          steps: 
+          - script: |
+              echo "Deploying to Production..."
+              # Replace with actual deployment script using CPanel
+            displayName: 'Deploy to Production'
+          - task: SendEmail@1
+            inputs:
+              to: 'awogao@gmail.com'
+              subject: 'Production Deployment Status'
+              body: 'Deployment to production was successful!'
+            displayName: 'Send Success Notification'
+>>>>>>> features

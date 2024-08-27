@@ -1,0 +1,33 @@
+- task: NodeTool@0
+      inputs:
+        versionSpec: '18.x' # Specify the Node.js version
+        checkLatest: true
+      displayName: 'Install Dependencies'
+
+    - script: |
+        npm audit fix --force
+        npm i sharp 
+        npm config set fund false --location=global
+        set cache .npm
+        npm install
+      displayName: 'Install Node.js'
+      workingDirectory: $(System.DefaultWorkingDirectory)/
+      
+    - script: |
+       npm audit fix --force
+       npm ci test
+      displayName: 'Run Unit Tests'
+      workingDirectory: $(System.DefaultWorkingDirectory)/
+    
+    - task: Npm@1
+      inputs:
+       workingDir: 'src/app'
+      displayName: 'npm run build apps'
+      
+    
+    - task: PublishBuildArtifacts@1
+      displayName: Publish artifacts
+      inputs:
+        PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+        ArtifactName: 'drop'
+        publishLocation: 'Container'

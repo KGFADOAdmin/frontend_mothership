@@ -105,14 +105,12 @@ stages:
                echo "Deploying to Test Environment"
              # Add deployment scripts/commands here (e.g., ARM templates, Kubernetes manifests)
             displayName: 'Deploy Application'
-          
           - task: AzureAppServiceManage@0
             displayName: 'dev-kgf-01 Stop'
             inputs:
               azureSubscription: 'kgf-serviceconnect-01'
               Action: Stop Azure App Service
               WebAppName: kgf-webapp
-          
           - task: AzureRmWebAppDeployment@4
             displayName: 'Deploy to Test'
             inputs:
@@ -120,9 +118,9 @@ stages:
               azureSubscription: 'kgf-serviceconnect-01'
               appType: 'webApp'
               WebAppName: kgf-webapp
-              packageForLinux: '$(Build.ArtifactStagingDirectory)/drop'
+              packageForLinux: '$(Build.ArtifactStagingDirectory)'
           
-       #   - task: PublishTestResults@2
+          #- task: PublishTestResults@2
         #    displayName: Publish Test result
         #    inputs:
         #      testResultsFormat: 'JUnit'

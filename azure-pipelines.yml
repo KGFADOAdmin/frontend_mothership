@@ -51,7 +51,7 @@ stages:
       inputs:
        workingDir: 'src/app'
        command: custom
-       customCommand: 'run ci test'
+       customCommand: 'run test-ci'
    
       
 

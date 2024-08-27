@@ -110,7 +110,7 @@ stages:
             inputs:
               azureSubscription: 'kgf-serviceconnect-01'
               Action: Stop Azure App Service
-              WebAppName: kgf-webapp
+              WebAppName: kgfwindows  
           - task: AzureRmWebAppDeployment@4
             displayName: 'Deploy to Test'
             inputs:

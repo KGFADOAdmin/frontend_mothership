@@ -36,7 +36,7 @@ stages:
         npm config set fund false --location=global
         set cache .npm
         npm audit fix 
-        npm config ls -l
+
 
     - task: Npm@1
       inputs:
@@ -58,7 +58,7 @@ stages:
       inputs:
        workingDir: 'src/app'
        command: custom
-       customCommand: 'run test-ci'
+       customCommand: 'run test:ci'
    
       
 

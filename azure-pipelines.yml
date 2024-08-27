@@ -54,7 +54,13 @@ stages:
         command: 'custom'
         workingDir: 'src/app'
         customCommand : 'run build'
-   
+    
+    - task : Npm@1
+      displayName: 'npm run dev'
+      inputs:
+        command: 'custom'
+        workingDir: 'src/app'
+        customCommand : 'run dev'
 
 
     - task: CopyFiles@2
@@ -125,9 +131,8 @@ stages:
               failTaskOnFailedTests: true
             displayName: 'Publish Test Results'
 
-               echo "Deploying to Test Environment"
              # Add deployment scripts/commands here (e.g., ARM templates, Kubernetes manifests)
-            displayName: 'Deploy Application'
+          
           - task: AzureAppServiceManage@0
             displayName: 'dev-kgf-01 Stop'
             inputs:

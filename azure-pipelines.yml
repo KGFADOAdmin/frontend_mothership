@@ -108,7 +108,7 @@ stages:
           - task: AzureAppServiceManage@0
             displayName: 'dev-kgf-01 Stop'
             inputs:
-              azureSubscription:  ''
+              azureSubscription: 'kgf-serviceconnect-01'
               Action: Stop Azure App Service
               WebAppName: $(dev-kgf-01)
           
@@ -116,7 +116,7 @@ stages:
             displayName: 'Deploy to Test'
             inputs:
               ConnectionType:  AzureRM
-              azureSubscription: ''
+              azureSubscription: 'kgf-serviceconnect-01'
               appType: 'webApp'
               WebAppName: $(dev-kgf-01)
               packageForLinux: '$(Build.ArtifactStagingDirectory)/drop'

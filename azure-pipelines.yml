@@ -111,14 +111,14 @@ stages:
             inputs:
               azureSubscription: 'kgfwindows'
               Action: Stop Azure App Service
-              WebAppName: kgfwebOS  
+              WebAppName: kgf-webapp  
           - task: AzureRmWebAppDeployment@4
             displayName: 'Deploy to Test'
             inputs:
               ConnectionType:  AzureRM
               azureSubscription: 'kgfwindows'
               appType: 'webApp'
-              WebAppName: kgfwebOS
+              WebAppName: kgf-webapp
               packageForLinux: '$(Pipeline.Workspace)/drop'
               
           - task: AzureAppServiceManage@0
@@ -126,7 +126,7 @@ stages:
             inputs:
               azureSubscription: 'kgfwindows'
               Action: Start Azure App Service
-              WebAppName: kgfwebOS
+              WebAppName: kgf-webapp
           
           
           

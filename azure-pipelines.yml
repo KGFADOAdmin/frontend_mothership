@@ -109,14 +109,14 @@ stages:
           - task: AzureAppServiceManage@0
             displayName: 'dev-kgf-01 Stop'
             inputs:
-              azureSubscription: 'kgfwindows'
+              azureSubscription: 'kgf-serviceconnect-01'
               Action: Stop Azure App Service
               WebAppName: kgf-webapp  
           - task: AzureRmWebAppDeployment@4
             displayName: 'Deploy to Test'
             inputs:
               ConnectionType:  AzureRM
-              azureSubscription: 'kgfwindows'
+              azureSubscription: 'kgf-serviceconnect-01'
               appType: 'webApp'
               WebAppName: kgf-webapp
               packageForLinux: '$(Pipeline.Workspace)/drop'
@@ -124,7 +124,7 @@ stages:
           - task: AzureAppServiceManage@0
             displayName: 'dev-kgf-01 Start'
             inputs:
-              azureSubscription: 'kgfwindows'
+              azureSubscription: 'kgf-serviceconnect-01'
               Action: Start Azure App Service
               WebAppName: kgf-webapp
           

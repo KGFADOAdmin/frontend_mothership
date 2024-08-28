@@ -119,7 +119,7 @@ stages:
               azureSubscription: 'kgfwindows'
               appType: 'webApp'
               WebAppName: kgfwebOS
-              packageForLinux: '$(Build.ArtifactStagingDirectory)'
+              packageForLinux: '$(Pipeline.Workspace)/**/*.zip'
               
           - task: AzureAppServiceManage@0
             displayName: 'dev-kgf-01 Start'

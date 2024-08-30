@@ -34,8 +34,6 @@ jobs:
       with:
         NODE-version: ${{ env.NODE_CORE_VERSION }}
         
-    - name: Restore packages
-      run: npm restore "${{ env.PROJECT_PATH }}"
     - name: Build app
       run: npm build "${{ env.PROJECT_PATH }}" --configuration ${{ env.CONFIGURATION }} --no-restore
     - name: Test app

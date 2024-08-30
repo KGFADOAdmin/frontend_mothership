@@ -1,36 +1,94 @@
-# This workflow will run tests using node and then publish a package to GitHub Packages when a release is created
-# For more information see: https://docs.github.com/en/actions/publishing-packages/publishing-nodejs-packages
-
-name: Node.js Package
-
+name: Frontmothership app deploy
 on:
-  release:
-    types: [created]
-
+  push:
+    branches:
+    - main
+    paths-ignore:
+    - '**/*.md'
+    - '**/*.gitignore'
+    - '**/*.gitattributes'
+    - '**/.next'
+    - 'node'
+env:
+  AZURE_WEBAPP_NAME: kgf-webb
+  AZURE_WEBAPP_PACKAGE_PATH: ./published
+  CONFIGURATION: Release
+  NODE_CORE_VERSION: 18.x
+  PROJECT_PATH: src/app
+  NODE_CLI_TELEMETRY_OPTOUT: 1
+  NODE_SKIP_FIRST_TIME_EXPERIENCE: 1
+  NODE_NOLOGO: true
+  NODE_GENERATE_CERTIFICATE: false
+  NODE_ADD_GLOBAL_TOOLS_TO_PATH: false
+  NODE_MULTILEVEL_LOOKUP: 0
+  
 jobs:
   build:
+    name: Build
+    if: github.event_name == 'push' && contains((github.event.commits), '***NO_CI***') == false && contains(toJson(github.event.commits), '[ci skip]') == false && contains(toJson(github.event.commits), '[skip ci]') == false
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 20
-      - run: npm ci
-      - run: npm test
+    - uses: actions/checkout@v2
+    - name:  Setup Node.js  ${{ env.NODE_CORE_VERSION }}
+      uses: actions/setup-NODE@v1
+      with:
+        NODE-version: ${{ env.NODE_CORE_VERSION }}
+        
+    - name: Restore packages
+      run: npm restore "${{ env.PROJECT_PATH }}"
+    - name: Build app
+      run: npm build "${{ env.PROJECT_PATH }}" --configuration ${{ env.CONFIGURATION }} --no-restore
+    - name: Test app
+      run: npm test "${{ env.PROJECT_PATH }}" --no-build
+    - name: Publish app for deploy
+      run: npm publish "${{ env.PROJECT_PATH }}" --configuration ${{ env.CONFIGURATION }} --no-build --output "${{ env.AZURE_WEBAPP_PACKAGE_PATH }}"
+    - name: Publish Artifacts
+      uses: actions/upload-artifact@v1.0.0
+      with:
+        name: webapp
+        path: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
 
-  publish-gpr:
+  staging:
     needs: build
+    name: Deploy to staging
+    environment:
+        name: staging
+        url: ${{ steps.deploy_staging.outputs.webapp-url }}
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      packages: write
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          registry-url: https://npm.pkg.github.com/
-      - run: npm ci
-      - run: npm publish
-        env:
-          NODE_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
+    # Download artifacts
+    - name: Download artifacts
+      uses: actions/download-artifact@v2
+      with:
+        name: webapp
+
+    # Deploy to App Service Linux
+    - name: Deploy to Azure WebApp
+      uses: azure/webapps-deploy@v2
+      id: deploy_staging
+      with:
+        app-name: ${{ env.AZURE_WEBAPP_NAME }}
+        publish-profile: ${{ secrets.AZURE_PUBLISH_PROFILE }}
+        slot-name: staging
+
+  deploy:
+    needs: staging
+    environment:
+      name: production
+      url: ${{ steps.deploy_production.outputs.webapp-url }}
+    name: Deploy to production
+    runs-on: ubuntu-latest
+    steps:
+    # Download artifacts
+    - name: Download artifacts
+      uses: actions/download-artifact@v2
+      with:
+        name: webapp
+
+    # Deploy to App Service Linux
+    - name: Deploy to Azure WebApp
+      id: deploy_production
+      uses: azure/webapps-deploy@v2
+      with:
+        app-name: ${{ env.AZURE_WEBAPP_NAME }}
+        publish-profile: ${{ secrets.AZURE_PUBLISH_PROFILE }}

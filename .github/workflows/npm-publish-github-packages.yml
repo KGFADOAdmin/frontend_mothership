@@ -53,8 +53,9 @@ jobs:
     - name: Upload Build Artifact
       uses: actions/upload-artifact@v3
       with:
-        name: drop
+        name: webapp
         path: ${{ github.workspace }}/artifact
+    
     
   staging:
     needs: build

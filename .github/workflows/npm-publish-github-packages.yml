@@ -14,7 +14,7 @@ env:
   AZURE_WEBAPP_NAME: kgf-webb
   AZURE_WEBAPP_PACKAGE_PATH: ./published
   CONFIGURATION: Release
-  NODE_CORE_VERSION: 18.x
+  NODE_CORE_VERSION: 14.x
   PROJECT_PATH: src/app
   NODE_CLI_TELEMETRY_OPTOUT: 1
   NODE_SKIP_FIRST_TIME_EXPERIENCE: 1
@@ -43,22 +43,17 @@ jobs:
         npm audit fix
         npm run build  
      # working-directory: "${{ env.PROJECT_PATH }}"
-
-  #snyk_scan:
-    - name: Install Snyk and run scan
-      run: |
-        npm config set fund false --location=global
-        echo "Running Snyk security scan"
-        npm install -g snyk
-        snyk test
-    - name: Authenticate with Snyk
-      run: snyk auth ${{ secrets.SNYK_TOKEN }}
-    - name: Run Snyk test
-      run: snyk test --all-projects
-    - name: Monitor project with Snyk
-      run: snyk monitor --all-projects
-      working-directory: ${{ github.workspace }}
-
+    - name: Run Snyk to check for vulnerabilities
+      uses: snyk/actions/node@master
+      env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}   
+    - name: Run Snyk to check for vulnerabilities
+      uses: snyk/actions/node@master
+      env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+      with:
+          command: monitor
+    
     - name: Copy project files
       run: |
         mkdir -p ${{ github.workspace }}/artifact

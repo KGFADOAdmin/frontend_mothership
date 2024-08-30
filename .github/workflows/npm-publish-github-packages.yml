@@ -22,6 +22,7 @@ env:
   NODE_GENERATE_CERTIFICATE: false
   NODE_ADD_GLOBAL_TOOLS_TO_PATH: false
   NODE_MULTILEVEL_LOOKUP: 0
+  secrets.SNYK_TOKEN: 'test'
   
 jobs:
   build:
@@ -43,24 +44,19 @@ jobs:
         npm run build  
      # working-directory: "${{ env.PROJECT_PATH }}"
 
-  snyk_scan:
-    name: Snyk Security Scan
-    runs-on: ubuntu-latest
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
-
-    - name: Set up Node.js
-      uses: actions/setup-node@v3
-      with:
-        node-version: '14'
-
+  #snyk_scan:
     - name: Install Snyk and run scan
       run: |
         npm config set fund false --location=global
         echo "Running Snyk security scan"
         npm install -g snyk
         snyk test
+    - name: Authenticate with Snyk
+      run: snyk auth ${{ secrets.SNYK_TOKEN }}
+    - name: Run Snyk test
+      run: snyk test --all-projects
+    - name: Monitor project with Snyk
+      run: snyk monitor --all-projects
       working-directory: ${{ github.workspace }}
 
     - name: Copy project files

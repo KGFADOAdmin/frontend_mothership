@@ -33,11 +33,13 @@ jobs:
       uses: actions/setup-NODE@v1
       with:
         NODE-version: ${{ env.NODE_CORE_VERSION }}
+    - run: npm ci
+    - run: npm test
         
     - name: Build app
-      run: npm build "${{ env.PROJECT_PATH }}" --configuration ${{ env.CONFIGURATION }} --no-restore
+      run: npm build "${{ env.PROJECT_PATH }}" 
     - name: Test app
-      run: npm test "${{ env.PROJECT_PATH }}" --no-build
+      run: npm test "${{ env.PROJECT_PATH }}" 
     - name: Publish app for deploy
       run: npm publish "${{ env.PROJECT_PATH }}" --configuration ${{ env.CONFIGURATION }} --no-build --output "${{ env.AZURE_WEBAPP_PACKAGE_PATH }}"
     - name: Publish Artifacts

@@ -40,10 +40,22 @@ jobs:
         npm install
         npm i sharp
         npm audit fix
-        npm run build --if-present
-       
-    
-   
+        npm run build  
+      working-directory: "${{ env.PROJECT_PATH }}"
+
+    - name: Copy project files
+      run: |
+        mkdir -p ${{ github.workspace }}/artifact
+        cp -R src/* ${{ github.workspace }}/artifact/
+        cp -R public/* ${{ github.workspace }}/artifact/
+      shell: bash
+
+    - name: Upload Build Artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: drop
+        path: ${{ github.workspace }}/artifact
+  
     - name: Publish app for deploy
       run: npm publish "${{ env.PROJECT_PATH }}" --configuration ${{ env.CONFIGURATION }} --no-build --output "${{ env.AZURE_WEBAPP_PACKAGE_PATH }}"
     - name: Publish Artifacts
@@ -51,6 +63,7 @@ jobs:
       with:
         name: webapp
         path: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
+        #working-directory: "${{ env.PROJECT_PATH }}"
 
   staging:
     needs: build

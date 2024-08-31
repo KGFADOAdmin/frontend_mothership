@@ -12,7 +12,6 @@ on:
     - 'node'
 env:
   AZURE_WEBAPP_NAME: kgf-webapp
-
   AZURE_WEBAPP_PACKAGE_PATH: ./published
   CONFIGURATION: Release
   NODE_CORE_VERSION: 18.x
@@ -48,21 +47,14 @@ jobs:
         npm i sharp
         npm audit fix
         npm run build  
-     # working-directory: "${{ env.PROJECT_PATH }}"
-    
-    - name: Copy project files
-      run: |
-        mkdir -p ${{ github.workspace }}/artifact
-        cp -R src/* ${{ github.workspace }}/artifact/
-        cp -R public/* ${{ github.workspace }}/artifact/
-      shell: bash
+      working-directory: "${{ env.PROJECT_PATH }}"
       
     - name: Upload Build Artifact
       uses: actions/upload-artifact@v3
       with:
         name: webapp
-        path: ${{ github.workspace }}/artifact
-    
+        working-directory: "${{ env.PROJECT_PATH }}"
+      
     
   staging:
     needs: build
@@ -90,7 +82,7 @@ jobs:
   deploy:
     needs: staging
     environment:
-      name: prod
+      name: production
       url: ${{ steps.deploy_production.outputs.webapp-url }}
     name: Deploy to production
     runs-on: ubuntu-latest

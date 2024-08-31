@@ -2,7 +2,7 @@ name: Frontmothership app deploy
 on:
   push:
     branches:
-    - main
+    - features
     - release/*
     paths-ignore:
     - '**/*.md'

@@ -71,20 +71,16 @@ jobs:
         npm run build  --if-present
       working-directory: "${{ env.PROJECT_PATH }}"
     
-    - name: Copy project files
+    - name: Zip artifact for deployment
       run: |
-        mkdir -p ${{ github.workspace }}/artifact
-        cp -R src/* ${{ github.workspace }}/artifact/
-        cp -R public/* ${{ github.workspace }}/artifact/
-        zip release.zip ${{ github.workspace }}/artifact/* -r
-      shell: bash
-      
-    - name: Upload Build Artifact
+        cd dist
+        zip release.zip ./* -r
+
+    - name: Upload artifact for deployment job
       uses: actions/upload-artifact@v3
       with:
-        name: webapp
-        path: ${{ github.workspace }}/artifact/release.zip
-    
+        name: node-app
+        path: ./dist/release.zip
   staging:
     needs: build
     name: Deploy to staging

@@ -10,9 +10,29 @@ on:
     - '**/*.gitattributes'
     - '**/.next'
     - 'node'
+  workflow_dispatch:
+    inputs:
+      logLevel:
+        description: 'Log level'
+        required: true
+        default: 'warning'
+        type: choice
+        options:
+        - info
+        - warning
+        - debug
+      tags:
+        description: 'frontgate tags'
+        required: false
+        type: boolean
+      environment:
+        description: 'Environment '
+        type: environment
+        required: true
+ 
 env:
   AZURE_WEBAPP_NAME: kgf-webapp
-  AZURE_WEBAPP_PACKAGE_PATH: ./published
+  AZURE_WEBAPP_PACKAGE_PATH: '.'
   CONFIGURATION: Release
   NODE_CORE_VERSION: 18.x
   PROJECT_PATH: src/app
@@ -40,13 +60,15 @@ jobs:
       uses: actions/setup-NODE@v1
       with:
         NODE-version: ${{ env.NODE_CORE_VERSION }}
+        cache: "npm"
+        cache-dependency-path: package-lock.json
     - name: npm install, build and test
       run: |
         npm config set fund false --location=global
         npm install
         npm i sharp
         npm audit fix
-        npm run build  
+        npm run build  --if-present
       working-directory: "${{ env.PROJECT_PATH }}"
     
     - name: Copy project files
@@ -54,13 +76,14 @@ jobs:
         mkdir -p ${{ github.workspace }}/artifact
         cp -R src/* ${{ github.workspace }}/artifact/
         cp -R public/* ${{ github.workspace }}/artifact/
+        zip release.zip ${{ github.workspace }}/artifact/* -r
       shell: bash
       
     - name: Upload Build Artifact
       uses: actions/upload-artifact@v3
       with:
         name: webapp
-        path: ${{ github.workspace }}/artifact   
+        path: ${{ github.workspace }}/artifact/release.zip
     
   staging:
     needs: build
@@ -87,6 +110,8 @@ jobs:
 
   deploy:
     needs: staging
+    permissions:
+      contents: none
     environment:
       name: production
       url: ${{ steps.deploy_production.outputs.webapp-url }}
@@ -98,7 +123,9 @@ jobs:
       uses: actions/download-artifact@v2
       with:
         name: webapp
-        
+
+    - name: unzip artifact for deployment
+      run: unzip release.zip   
 
     # Deploy to App Service Linux
     - name: Deploy to Azure WebApp

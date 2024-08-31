@@ -1,0 +1,8 @@
+{
+    "appService.zipIgnorePattern": [
+        "node_modules{,/**}",
+        ".vscode{,/**}"
+    ],
+    "appService.defaultWebAppToDeploy": "/subscriptions/173092e7-cdff-4a3a-88a9-5d4c07821b83/resourceGroups/dev-kgf-01_group/providers/Microsoft.Web/sites/kgf-webapp",
+    "appService.deploySubpath": "."
+}

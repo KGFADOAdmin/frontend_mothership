@@ -71,16 +71,15 @@ jobs:
         npm run build  --if-present
       working-directory: "${{ env.PROJECT_PATH }}"
     
-    - name: Zip artifact for deployment
-      run: |
-        cd dist
-        zip release.zip ./* -r
-
-    - name: Upload artifact for deployment job
-      uses: actions/upload-artifact@v3
+    - name: Publish app for deploy
+      run: npm run publish "${{ env.PROJECT_PATH }}" --configuration ${{ env.CONFIGURATION }} --no-build --output "${{ env.AZURE_WEBAPP_PACKAGE_PATH }}"
+   
+    - name: Publish Artifacts
+      uses: actions/upload-artifact@v1.0.0
       with:
-        name: node-app
-        path: ./dist/release.zip
+        name: webapp
+        path: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
+        
   staging:
     needs: build
     name: Deploy to staging

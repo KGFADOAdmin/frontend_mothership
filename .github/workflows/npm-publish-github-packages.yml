@@ -73,9 +73,9 @@ jobs:
     
     - name: Copy project files
       run: |
-        mkdir -p /artifact
-        cp -R src/* /artifact
-        cp -R public/* /artifact/
+        mkdir -p ${{ github.workspace }}/artifact
+        cp -R src/* ${{ github.workspace }}/artifact/
+        cp -R public/* ${{ github.workspace }}/artifact/
         zip release.zip ${{ github.workspace }}/artifact/* -r
       shell: bash
       
@@ -83,7 +83,7 @@ jobs:
       uses: actions/upload-artifact@v3
       with:
         name: webapp
-        path: /artifact/release.zip
+        path: ${{ github.workspace }}/artifact/release.zip
     
   staging:
     needs: build
@@ -98,7 +98,6 @@ jobs:
       uses: actions/download-artifact@v2
       with:
         name: webapp
-        path: /artifact/release.zip
 
     # Deploy to App Service Linux
     - name: Deploy to Azure WebApp
@@ -124,7 +123,6 @@ jobs:
       uses: actions/download-artifact@v2
       with:
         name: webapp
-        
     - name: unzip artifact for deployment
       run: unzip release.zip   
 

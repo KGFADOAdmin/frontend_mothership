@@ -11,7 +11,7 @@ on:
     - '**/.next'
     - 'node'
 env:
-  AZURE_WEBAPP_NAME: kgf-webb
+  AZURE_WEBAPP_NAME: kgfmothership
   AZURE_WEBAPP_PACKAGE_PATH: ./published
   CONFIGURATION: Release
   NODE_CORE_VERSION: 18.x

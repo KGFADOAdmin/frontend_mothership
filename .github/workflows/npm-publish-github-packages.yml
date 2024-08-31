@@ -70,11 +70,6 @@ jobs:
         npm audit fix
         npm run build  --if-present
       working-directory: "${{ env.PROJECT_PATH }}"
-    
-    - name: Publish app for deploy
-      run: |
-        npm ci
-        npm publish
 
     - name: Publish Artifacts
       uses: actions/upload-artifact@v1.0.0

@@ -48,13 +48,19 @@ jobs:
         npm audit fix
         npm run build  
       working-directory: "${{ env.PROJECT_PATH }}"
+    
+    - name: Copy project files
+      run: |
+        mkdir -p ${{ github.workspace }}/artifact
+        cp -R src/* ${{ github.workspace }}/artifact/
+        cp -R public/* ${{ github.workspace }}/artifact/
+      shell: bash
       
     - name: Upload Build Artifact
       uses: actions/upload-artifact@v3
       with:
         name: webapp
-        path: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
-      
+        path: ${{ github.workspace }}/artifact   
     
   staging:
     needs: build
@@ -92,6 +98,7 @@ jobs:
       uses: actions/download-artifact@v2
       with:
         name: webapp
+        
 
     # Deploy to App Service Linux
     - name: Deploy to Azure WebApp

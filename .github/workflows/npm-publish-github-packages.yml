@@ -72,7 +72,7 @@ jobs:
       working-directory: "${{ env.PROJECT_PATH }}"
     
     - name: Publish app for deploy
-      run: npm run publish "${{ env.PROJECT_PATH }}" --configuration ${{ env.CONFIGURATION }} --no-build --output "${{ env.AZURE_WEBAPP_PACKAGE_PATH }}"
+      run: npm publish "${{ env.PROJECT_PATH }}" --configuration ${{ env.CONFIGURATION }} --no-build --output "${{ env.AZURE_WEBAPP_PACKAGE_PATH }}"
    
     - name: Publish Artifacts
       uses: actions/upload-artifact@v1.0.0

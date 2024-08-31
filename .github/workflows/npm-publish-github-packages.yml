@@ -31,7 +31,7 @@ on:
         required: true
  
 env:
-  AZURE_WEBAPP_NAME: kgfmothership
+  AZURE_WEBAPP_NAME: olu
   AZURE_WEBAPP_PACKAGE_PATH: '.'
   CONFIGURATION: Release
   NODE_CORE_VERSION: 18.x

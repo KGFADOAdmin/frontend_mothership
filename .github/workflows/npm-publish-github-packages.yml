@@ -12,6 +12,7 @@ on:
     - 'node'
 env:
   AZURE_WEBAPP_NAME: kgf-webapp
+
   AZURE_WEBAPP_PACKAGE_PATH: ./published
   CONFIGURATION: Release
   NODE_CORE_VERSION: 18.x
@@ -89,7 +90,7 @@ jobs:
   deploy:
     needs: staging
     environment:
-      name: production
+      name: prod
       url: ${{ steps.deploy_production.outputs.webapp-url }}
     name: Deploy to production
     runs-on: ubuntu-latest

@@ -35,7 +35,7 @@ env:
   AZURE_WEBAPP_NAME: app-mothership
   AZURE_WEBAPP_PACKAGE_PATH: '.'
   CONFIGURATION: Release
-  NODE_CORE_VERSION: 20.x
+  NODE_CORE_VERSION: '20.x'
   PROJECT_PATH: src/
   NODE_CLI_TELEMETRY_OPTOUT: 1
   NODE_SKIP_FIRST_TIME_EXPERIENCE: 1
@@ -43,7 +43,7 @@ env:
   NODE_GENERATE_CERTIFICATE: false
   NODE_ADD_GLOBAL_TOOLS_TO_PATH: false
   NODE_MULTILEVEL_LOOKUP: 0
-  secrets.SNYK_TOKEN: 'test'
+  SNYK_TOKEN: 'da364a31-6b96-412a-b516-c4d2bf4bc8fe'
 
 permissions:
   contents: 'read'
@@ -59,9 +59,10 @@ jobs:
     - name:  Setup Node.js  ${{ env.NODE_CORE_VERSION }}
       uses: actions/setup-NODE@v1
       with:
-        NODE-version: ${{ env.NODE_CORE_VERSION }}
+        node-version: '${{ env.NODE_CORE_VERSION }}'
         cache: "npm"
         cache-dependency-path: package-lock.json
+
     - name: npm install, build and test
       run: |
         npm config set fund false --location=global
@@ -71,6 +72,12 @@ jobs:
         npm run build  --if-present
         npm run test --if-present
       working-directory: "${{ env.PROJECT_PATH }}"
+    
+    - name: Run Snyk to check for vulnerabilities
+      uses: snyk/actions/node@master
+      env:
+        SNYK_TOKEN: '${{ secrets.SNYK_TOKEN }}'
+  
 
     - name: Publish Artifacts
       uses: actions/upload-artifact@v1.0.0

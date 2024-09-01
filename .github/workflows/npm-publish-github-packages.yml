@@ -31,10 +31,10 @@ on:
         required: true
  
 env:
-  AZURE_WEBAPP_NAME: kgfmothership
+  AZURE_WEBAPP_NAME: app-mothership
   AZURE_WEBAPP_PACKAGE_PATH: '.'
   CONFIGURATION: Release
-  NODE_CORE_VERSION: 18.x
+  NODE_CORE_VERSION: 20.x
   PROJECT_PATH: src/app
   NODE_CLI_TELEMETRY_OPTOUT: 1
   NODE_SKIP_FIRST_TIME_EXPERIENCE: 1
@@ -47,7 +47,7 @@ env:
 jobs:
   build:
     name: Build
-    if: github.event_name == 'push' && contains((github.event.commits), '***NO_CI***') == false && contains(toJson(github.event.commits), '[ci skip]') == false && contains(toJson(github.event.commits), '[skip ci]') == false
+    #if: github.event_name == 'push' && contains((github.event.commits), '***NO_CI***') == false && contains(toJson(github.event.commits), '[ci skip]') == false && contains(toJson(github.event.commits), '[skip ci]') == false
     runs-on: ubuntu-latest
     permissions:
       actions: read

@@ -110,7 +110,7 @@ jobs:
         SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
 
   staging:
-    needs: build
+    needs: testing
     name: Deploy to staging
     environment:
         name: staging

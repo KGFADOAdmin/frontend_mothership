@@ -4,6 +4,7 @@ on:
     branches:
     - features
     - release/*
+    
     paths-ignore:
     - '**/*.md'
     - '**/*.gitignore'
@@ -35,7 +36,7 @@ env:
   AZURE_WEBAPP_PACKAGE_PATH: '.'
   CONFIGURATION: Release
   NODE_CORE_VERSION: 20.x
-  PROJECT_PATH: src/app
+  PROJECT_PATH: src/
   NODE_CLI_TELEMETRY_OPTOUT: 1
   NODE_SKIP_FIRST_TIME_EXPERIENCE: 1
   NODE_NOLOGO: true
@@ -43,17 +44,16 @@ env:
   NODE_ADD_GLOBAL_TOOLS_TO_PATH: false
   NODE_MULTILEVEL_LOOKUP: 0
   secrets.SNYK_TOKEN: 'test'
+
+permissions:
+  contents: 'read'
+  packages: 'write'
   
 jobs:
   build:
     name: Build
     #if: github.event_name == 'push' && contains((github.event.commits), '***NO_CI***') == false && contains(toJson(github.event.commits), '[ci skip]') == false && contains(toJson(github.event.commits), '[skip ci]') == false
     runs-on: ubuntu-latest
-    permissions:
-      actions: read
-      contents: read
-      statuses: read
-      security-events: write
     steps:
     - uses: actions/checkout@v2
     - name:  Setup Node.js  ${{ env.NODE_CORE_VERSION }}

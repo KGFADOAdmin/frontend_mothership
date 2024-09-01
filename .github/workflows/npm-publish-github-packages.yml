@@ -93,9 +93,9 @@ jobs:
 
   testing:
     needs: build
-    name: Deploy to staging
+    name: Deploy to testing
     environment:
-      name: staging
+      name: testing
       url: ${{ steps.deploy_staging.outputs.webapp-url }}
     runs-on: ubuntu-latest
     steps:

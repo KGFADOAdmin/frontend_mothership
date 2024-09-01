@@ -56,6 +56,11 @@ jobs:
     name: Build
     #if: github.event_name == 'push' && contains((github.event.commits), '***NO_CI***') == false && contains(toJson(github.event.commits), '[ci skip]') == false && contains(toJson(github.event.commits), '[skip ci]') == false
     runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: read
+      statuses: read
+      security-events: write
     steps:
     - uses: actions/checkout@v2
     - name:  Setup Node.js  ${{ env.NODE_CORE_VERSION }}
@@ -76,12 +81,10 @@ jobs:
       working-directory: ${{ env.PROJECT_PATH }}
     
     - name: Run Snyk to check for vulnerabilities
-      uses: snyk/actions/node@master
+      uses: actions/checkout@master
       env:
         SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-      with:
-          #args: --severity-threshold=high
-          args: --sarif-file-output=snyk.sarif
+     
   
 
     - name: Publish Artifacts

@@ -46,8 +46,10 @@ env:
   SNYK_TOKEN: 'da364a31-6b96-412a-b516-c4d2bf4bc8fe'
 
 permissions:
-  contents: 'read'
-  packages: 'write'
+  contents: read
+  statuses: read
+  packages: write
+  security-events: write
   
 jobs:
   build:
@@ -59,7 +61,7 @@ jobs:
     - name:  Setup Node.js  ${{ env.NODE_CORE_VERSION }}
       uses: actions/setup-NODE@v1
       with:
-        node-version: '${{ env.NODE_CORE_VERSION }}'
+        node-version: ${{ env.NODE_CORE_VERSION }}
         cache: "npm"
         cache-dependency-path: package-lock.json
 
@@ -71,12 +73,15 @@ jobs:
         npm audit fix
         npm run build  --if-present
         npm run test --if-present
-      working-directory: "${{ env.PROJECT_PATH }}"
+      working-directory: ${{ env.PROJECT_PATH }}
     
     - name: Run Snyk to check for vulnerabilities
       uses: snyk/actions/node@master
       env:
-        SNYK_TOKEN: '${{ secrets.SNYK_TOKEN }}'
+        SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+      with:
+          #args: --severity-threshold=high
+          args: --sarif-file-output=snyk.sarif
   
 
     - name: Publish Artifacts

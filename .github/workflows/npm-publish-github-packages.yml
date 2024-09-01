@@ -85,16 +85,32 @@ jobs:
       env:
         SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
      
-  
-
     - name: Publish Artifacts
       uses: actions/upload-artifact@v1.0.0
       with:
         name: webapp
         path: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
 
-  staging:
+  testing:
     needs: build
+    name: Deploy to staging
+    environment:
+      name: staging
+      url: ${{ steps.deploy_staging.outputs.webapp-url }}
+    runs-on: ubuntu-latest
+    steps:
+          # Download artifacts
+    - name: Download artifacts
+      uses: actions/download-artifact@v2
+      with:
+        name: webapp
+    - name: Run Snyk to check for vulnerabilities
+      uses: actions/checkout@master
+      env:
+        SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+
+  staging:
+    needs: testing
     name: Deploy to staging
     environment:
         name: staging
@@ -115,7 +131,12 @@ jobs:
         app-name: ${{ env.AZURE_WEBAPP_NAME }}
         publish-profile: ${{ secrets.AZURE_PUBLISH_PROFILE }}
         slot-name: staging
-
+      
+    - name: Run Snyk to check for vulnerabilities
+      uses: actions/checkout@master
+      env:
+        SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+  
   deploy:
     needs: staging
     permissions:
@@ -123,6 +144,8 @@ jobs:
     environment:
       name: production
       url: ${{ steps.deploy_production.outputs.webapp-url }}
+  
+    
     name: Deploy to production
     runs-on: ubuntu-latest
     steps:

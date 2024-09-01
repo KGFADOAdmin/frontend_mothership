@@ -96,7 +96,7 @@ jobs:
     name: Deploy to testing
     environment:
       name: testing
-      url: ${{ steps.deploy_staging.outputs.webapp-url }}
+      url: ${{ steps.deploy_testing.outputs.webapp-url }}
     runs-on: ubuntu-latest
     steps:
           # Download artifacts
@@ -110,7 +110,7 @@ jobs:
         SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
 
   staging:
-    needs: testing
+    needs: build
     name: Deploy to staging
     environment:
         name: staging

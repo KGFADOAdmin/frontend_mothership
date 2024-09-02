@@ -10,7 +10,7 @@ on:
     - '**/*.md'
     - '**/*.gitignore'
     - '**/*.gitattributes'
-    - 'node_modules/*'
+    - 'node_modules.tar.gz'
     - 'node_modules*'
   workflow_dispatch:
     inputs:

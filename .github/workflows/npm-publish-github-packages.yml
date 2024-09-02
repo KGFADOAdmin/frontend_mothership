@@ -9,7 +9,7 @@ on:
     paths-ignore:
     - '**/*.md'
     - '**/*.gitignore'
-    - '**/*.gitattributes'
+    
     - 'node_modules.tar.gz'
     - 'node_modules*'
   workflow_dispatch:

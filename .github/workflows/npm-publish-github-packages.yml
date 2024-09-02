@@ -53,7 +53,7 @@ permissions:
   
 jobs:
   build:
-    name: Build
+    name: Build,Test && Snykscan
     #if: github.event_name == 'push' && contains((github.event.commits), '***NO_CI***') == false && contains(toJson(github.event.commits), '[ci skip]') == false && contains(toJson(github.event.commits), '[skip ci]') == false
     runs-on: ubuntu-latest
     permissions:
@@ -76,7 +76,7 @@ jobs:
         npm install
         npm i sharp
         npm audit fix
-        npm run build  --if-present
+        npm run build  
         npm run test --if-present
       working-directory: ${{ env.PROJECT_PATH }}
     
@@ -93,7 +93,7 @@ jobs:
 
   testing:
     needs: build
-    name: Deploy to testing
+    name: Deploy to testing environment
     environment:
       name: testing
       url: ${{ steps.deploy_testing.outputs.webapp-url }}
@@ -111,7 +111,7 @@ jobs:
 
   staging:
     needs: testing
-    name: Deploy to staging
+    name: Deploy to staging environment
     environment:
         name: staging
         url: ${{ steps.deploy_staging.outputs.webapp-url }}

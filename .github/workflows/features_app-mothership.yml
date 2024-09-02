@@ -9,7 +9,6 @@ on:
     - '**/*.md'
     - '**/*.gitignore'
     - '**/*.gitattributes'
-    - '**/.next'
     - 'node'
   workflow_dispatch:
     inputs:

@@ -66,8 +66,7 @@ jobs:
       uses: actions/setup-NODE@v1
       with:
         node-version: ${{ env.NODE_CORE_VERSION }}
-        cache: "npm"
-        cache-dependency-path: package-lock.json
+       
 
     - name: npm install, build and test
       run: |

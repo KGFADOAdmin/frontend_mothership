@@ -63,18 +63,22 @@ jobs:
       statuses: read
       security-events: write
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
     - name:  Setup Node.js  ${{ env.NODE_CORE_VERSION }}
-      uses: actions/setup-NODE@v1
+      uses: actions/setup-NODE@v4
       with:
         node-version: ${{ env.NODE_CORE_VERSION }}
-        
+        cache: 'npm'
+        cache-dependency-path: package-lock.json
+
     - name: npm install, build and test
       run: |
         npm config set fund false --location=global
         npm i sharp
         npm audit fix
+        npm ci
         npm install
+        npm test
         npm run build  --if-present
         npm run test --if-present
       working-directory: ${{ env.PROJECT_PATH }}

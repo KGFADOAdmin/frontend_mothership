@@ -69,7 +69,6 @@ jobs:
       with:
         node-version: ${{ env.NODE_CORE_VERSION }}
         
-
     - name: npm install, build and test
       run: |
         npm config set fund false --location=global
@@ -79,7 +78,7 @@ jobs:
         npm run build  
         npm run test --if-present
       working-directory: ${{ env.PROJECT_PATH }}
-    
+      
     - name: Run Snyk to check for vulnerabilities
       uses: actions/checkout@master
       env:
@@ -110,7 +109,7 @@ jobs:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
   
   staging:
-    needs: testing
+    needs: build
     name: Deploy to staging environment
     environment:
         name: staging

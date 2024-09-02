@@ -90,8 +90,25 @@ jobs:
       with:
         name: webapp
         path: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
-
-
+  
+  testing:
+    needs: build
+    name: Deploy to testing environment
+    environment:
+        name: testing
+        url: ${{ steps.deploy_testing.outputs.webapp-url }}
+    runs-on: ubuntu-latest
+    steps:
+    # Download artifacts
+    - name: Download artifacts
+      uses: actions/download-artifact@v2
+      with:
+        name: webapp
+    - name: Run Snyk to check for vulnerabilities
+      uses: actions/checkout@master
+      env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+  
   staging:
     needs: build
     name: Deploy to staging environment

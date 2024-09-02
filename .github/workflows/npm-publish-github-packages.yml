@@ -78,9 +78,8 @@ jobs:
         npm audit fix
         npm ci
         npm install
-        npm test
         npm run build  --if-present
-        npm run test --if-present
+        npm test --if-present
       working-directory: ${{ env.PROJECT_PATH }}
       
     - name: Run Snyk to check for vulnerabilities

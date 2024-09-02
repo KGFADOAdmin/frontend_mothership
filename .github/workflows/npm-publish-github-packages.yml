@@ -9,8 +9,7 @@ on:
     - '**/*.md'
     - '**/*.gitignore'
     - '**/*.gitattributes'
-    - '**/.next'
-    - 'node'
+    - '**node*'
   workflow_dispatch:
     inputs:
       logLevel:

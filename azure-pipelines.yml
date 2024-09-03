@@ -75,21 +75,28 @@ stages:
         artifactName: 'drop'
         targetPath: '$(Build.ArtifactStagingDirectory)'        
     
- # Step 2 integrate security scans into the CI/CD pipeline.
-  - job:
-    pool:
-      vmImage: ubuntu-latest
-  - job: SnykScan
-    displayName: 'SnykScan'
-    pool:
-      vmImage: ubuntu-latest
-    steps:
+  # Step 2: Run Snyk security scan
     - script: |
-        npm config set fund false --location=global
-        echo "Running Snyk security scan"
-        npm install -g snyk 
-      displayName: 'Run Snyk Scan'
-      workingDirectory: $(System.DefaultWorkingDirectory)
+        npm install -g snyk
+        snyk auth $(SNYK_TOKEN)
+         snyk test
+      displayName: 'Run Snyk Security Scan'
+      env:
+         SNYK_TOKEN: $(SNYK_TOKEN)
+
+          # Step 3: Analyze Snyk scan results
+    - task: Bash@3
+      displayName: 'Check Snyk Results'
+      inputs:
+         targetType: 'inline'
+         script: |
+            snyk test --json > snyk-report.json
+            if grep -q '"vulnerabilities": \[\]' snyk-report.json; then
+             echo "No vulnerabilities found."
+              else
+                  echo "Critical vulnerabilities found. Failing build."
+                  exit 1
+                fi
  
 # Step 3: Approval to proceed to the testing environment
 - stage: TestDeployment

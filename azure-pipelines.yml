@@ -100,6 +100,7 @@ stages:
               # az webapp deployment source config-zip --resource-group <resource-group> --name <app-name> --src <path-to-zip>
             displayName: 'Deploy Application'
           - script: |
+<<<<<<< HEAD
                 npm install -g snyk
                 snyk auth $(SNYK_TOKEN)
                 snyk test
@@ -107,6 +108,19 @@ stages:
             env:
              SNYK_TOKEN: $(SNYK_TOKEN)
 
+=======
+              echo "Running Integration Tests"
+            displayName: 'Run Integration Tests'
+          - script: |
+               npm install -g snyk
+               snyk auth $(SNYK_TOKEN)
+               snyk test
+            displayName: 'Run Snyk Security Scan'
+            env:
+             workingDirectory: '.' 
+             SNYK_TOKEN: $(SNYK_TOKEN)
+            
+>>>>>>> 8565d1e6299ded3169a6ce5d9d11f9f393857c6e
 
         
  

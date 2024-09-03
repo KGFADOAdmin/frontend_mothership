@@ -77,7 +77,7 @@ stages:
       displayName: 'Run Snyk Security Scan'
       env:
          SNYK_TOKEN: $(SNYK_TOKEN)
-       workingDirectory: '.'
+
          
  
 # Step 3: Approval to proceed to the testing environment
@@ -99,24 +99,20 @@ stages:
               # Example for a Node.js app deployment:
               # az webapp deployment source config-zip --resource-group <resource-group> --name <app-name> --src <path-to-zip>
             displayName: 'Deploy Application'
-            
           - script: |
-              echo "Running Integration Tests"
-            displayName: 'Run Integration Tests'
-          - script: |
-               npm install -g snyk
-               snyk auth $(SNYK_TOKEN)
-               snyk test
-           displayName: 'Run Snyk Security Scan'
-           env:
-           SNYK_TOKEN: $(SNYK_TOKEN)
-           workingDirectory: '.'
+                npm install -g snyk
+                snyk auth $(SNYK_TOKEN)
+                snyk test
+            displayName: 'Run Snyk Security Scan'
+            env:
+             SNYK_TOKEN: $(SNYK_TOKEN)
+
 
         
  
 - stage: Staging
   displayName: 'Deploy to Staging'
-  dependsOn: TestDeployment
+  dependsOn: BuildAndTest
   jobs:
   - deployment: DeployToStaging
     displayName: 'Deploy to Staging'
@@ -128,25 +124,12 @@ stages:
             deploy:
               steps:
               - script: |
-                   templates/npm-steps.yml
+                   templates/snykscan.yml
                     echo "Conduct UAT..."
                     # Replace with actual UAT commands if any
                 displayName: 'Conduct UAT'
  
-  - job: SnykScan
-    displayName: 'SnykScan'
-    pool:
-      vmImage: ubuntu-latest
-    steps:
-    - script: |
-        npm install -g snyk
-        snyk auth $(SNYK_TOKEN)
-        snyk test
-      displayName: 'Run Snyk Security Scan'
-      env:
-        SNYK_TOKEN: $(SNYK_TOKEN)
-      workingDirectory: '.'
-
+  
 
 - stage: Production
   displayName: 'Deploy to Production'

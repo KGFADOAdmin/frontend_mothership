@@ -1,0 +1,12 @@
+- job: SnykScan
+    displayName: 'SnykScan'
+    pool:
+      vmImage: ubuntu-latest
+    steps:
+    - script: |
+        npm install -g snyk
+        snyk auth $(SNYK_TOKEN)
+        snyk test
+      displayName: 'Run Snyk Security Scan'
+      env:
+        SNYK_TOKEN: $(SNYK_TOKEN)

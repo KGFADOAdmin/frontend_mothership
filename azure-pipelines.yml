@@ -83,7 +83,7 @@ stages:
         npm install -g snyk 
       displayName: 'Run Snyk Scan'
       env:
-          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+          SNYK_TOKEN: ${{ SNYK_TOKEN }}
       workingDirectory: $(System.DefaultWorkingDirectory)
  
 # Step 3: Approval to proceed to the testing environment
@@ -157,9 +157,9 @@ stages:
         npm install -g snyk 
       displayName: 'Run Snyk Scan'
       env:
-          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+          SNYK_TOKEN: ${{ SNYK_TOKEN }}
       workingDirectory: $(System.DefaultWorkingDirectory)
-      
+
 - stage: Production
   displayName: 'Deploy to Production'
   dependsOn: SecurityScan

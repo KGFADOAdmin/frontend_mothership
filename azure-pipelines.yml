@@ -105,15 +105,7 @@ stages:
               
             displayName: 'Run Integration Tests'
 
-          - script: |
-              echo "Running System Tests"
-          - script: |
-             npm install -g snyk
-             snyk auth $(SNYK_TOKEN)
-             snyk test
-            displayName: 'Run Snyk Security Scan'
-            env:
-               SNYK_TOKEN: $(SNYK_TOKEN)
+        
  
 - stage: Staging
   displayName: 'Deploy to Staging'

@@ -119,8 +119,28 @@ stages:
 
           - script: |
               echo "Running System Tests"
-              
-            displayName: 'Run System Tests'
+          - script: |
+             npm install -g snyk
+             snyk auth $(SNYK_TOKEN)
+             snyk test
+            displayName: 'Run Snyk Security Scan'
+            env:
+               SNYK_TOKEN: $(SNYK_TOKEN)
+
+          # Step 3: Analyze Snyk scan results
+          - task: Bash@3
+            displayName: 'Check Snyk Results'
+            inputs:
+             targetType: 'inline'
+             script: |
+               snyk test --json > snyk-report.json
+                if grep -q '"vulnerabilities": \[\]' snyk-report.json; then
+                  echo "No vulnerabilities found."
+                else
+                  echo "Critical vulnerabilities found. Failing build."
+                  exit 1
+                fi 
+           
 
           - task: PublishTestResults@2
             inputs:
@@ -129,30 +149,7 @@ stages:
               failTaskOnFailedTests: true
             displayName: 'Publish Test Results'
 
-             # Add deployment scripts/commands here (e.g., ARM templates, Kubernetes manifests)
-  # Step 5 integrate security scans into the CI/CD pipeline.
-   # Step 5: Run Snyk security scan
-    - script: |
-        npm install -g snyk
-        snyk auth $(SNYK_TOKEN)
-        snyk test
-      displayName: 'Run Snyk Security Scan'
-      env:
-         SNYK_TOKEN: $(SNYK_TOKEN)
-
-          # Step 3: Analyze Snyk scan results
-    - task: Bash@3
-      displayName: 'Check Snyk Results'
-      inputs:
-        targetType: 'inline'
-        script: |
-          snyk test --json > snyk-report.json
-                if grep -q '"vulnerabilities": \[\]' snyk-report.json; then
-                  echo "No vulnerabilities found."
-                else
-                  echo "Critical vulnerabilities found. Failing build."
-                  exit 1
-                fi     
+                
                         
 - stage: Staging
   displayName: 'Deploy to Staging'
@@ -172,26 +169,38 @@ stages:
                     echo "Conduct UAT..."
                     # Replace with actual UAT commands if any
                 displayName: 'Conduct UAT'
-  - job:
-    pool:
-      vmImage: ubuntu-latest
+ 
   - job: SnykScan
     displayName: 'SnykScan'
     pool:
       vmImage: ubuntu-latest
     steps:
     - script: |
-        npm config set fund false --location=global
-        echo "Running Snyk security scan"
-        npm install -g snyk 
-      displayName: 'Run Snyk Scan'
+        npm install -g snyk
+        snyk auth $(SNYK_TOKEN)
+        snyk test
+      displayName: 'Run Snyk Security Scan'
       env:
-          SNYK_TOKEN: ${{ SNYK_TOKEN }}
-      workingDirectory: $(System.DefaultWorkingDirectory)
+        SNYK_TOKEN: $(SNYK_TOKEN)
+
+          # Step 3: Analyze Snyk scan results
+    - task: Bash@3
+      displayName: 'Check Snyk Results'
+      inputs:
+        targetType: 'inline'
+        script: |
+          snyk test --json > snyk-report.json
+                if grep -q '"vulnerabilities": \[\]' snyk-report.json; then
+                  echo "No vulnerabilities found."
+                else
+                  echo "Critical vulnerabilities found. Failing build."
+                  exit 1
+                fi 
+    
 
 - stage: Production
   displayName: 'Deploy to Production'
-  dependsOn: SecurityScan
+  dependsOn: staging
   condition: succeeded()
   jobs:
   - deployment: DeployToProduction

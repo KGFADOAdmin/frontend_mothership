@@ -9,7 +9,7 @@ on:
     paths-ignore:
     - '**/*.md'
     - '**/*.gitignore'
-    - 'node_modules.tar.gz'
+    - '**/node_modules.tar.gz'
     - 'node_modules*'
   workflow_dispatch:
     inputs:
@@ -27,7 +27,7 @@ on:
         required: false
         type: boolean
       environment:
-        description: 'Environment '
+        description: 'Environment'
         type: environment
         required: true
  
@@ -101,6 +101,7 @@ jobs:
     # Download artifacts
     - name: Download artifacts
       uses: actions/download-artifact@v4
+      id: deploy_testing
       with:
         name: webapp
     - name: Run Snyk to check for vulnerabilities
@@ -128,7 +129,7 @@ jobs:
 
     # Deploy to App Service Linux
     - name: Deploy to Azure WebApp
-      uses: azure/webapps-deploy@v2
+      uses: azure/webapps-deploy@v3
       id: deploy_staging
       with:
         app-name: ${{ env.AZURE_WEBAPP_NAME }}

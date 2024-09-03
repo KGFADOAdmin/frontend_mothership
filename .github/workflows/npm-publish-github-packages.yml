@@ -55,7 +55,6 @@ permissions:
 jobs:
   build:
     name: Build,Test && Snykscan
-    #if: github.event_name == 'push' && contains((github.event.commits), '***NO_CI***') == false && contains(toJson(github.event.commits), '[ci skip]') == false && contains(toJson(github.event.commits), '[skip ci]') == false
     runs-on: ubuntu-latest
     permissions:
       actions: read
@@ -102,7 +101,7 @@ jobs:
     steps:
     # Download artifacts
     - name: Download artifacts
-      uses: actions/download-artifact@v2
+      uses: actions/download-artifact@v4
       with:
         name: webapp
     - name: Run Snyk to check for vulnerabilities
@@ -120,7 +119,7 @@ jobs:
     steps:
     # Download artifacts
     - name: Download artifacts
-      uses: actions/download-artifact@v2
+      uses: actions/download-artifact@v4
       with:
         name: webapp
     - name: Run Snyk to check for vulnerabilities

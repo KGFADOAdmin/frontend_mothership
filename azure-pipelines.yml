@@ -89,8 +89,6 @@ stages:
         echo "Running Snyk security scan"
         npm install -g snyk 
       displayName: 'Run Snyk Scan'
-      env:
-          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
       workingDirectory: $(System.DefaultWorkingDirectory)
  
 # Step 3: Approval to proceed to the testing environment
@@ -167,8 +165,6 @@ stages:
         echo "Running Snyk security scan"
         npm install -g snyk 
       displayName: 'Run Snyk Scan'
-      env:
-          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
       workingDirectory: $(System.DefaultWorkingDirectory)
   
 - stage: Production

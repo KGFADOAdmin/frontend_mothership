@@ -9,8 +9,7 @@ on:
     paths-ignore:
     - '**/*.md'
     - '**/*.gitignore'
-    
-    - 'node_modules.tar.gz'
+    - '**/node_modules.tar.gz'
     - 'node_modules*'
   workflow_dispatch:
     inputs:
@@ -28,7 +27,7 @@ on:
         required: false
         type: boolean
       environment:
-        description: 'Environment '
+        description: 'Environment'
         type: environment
         required: true
  
@@ -37,7 +36,7 @@ env:
   AZURE_WEBAPP_PACKAGE_PATH: '.'
   CONFIGURATION: Release
   NODE_CORE_VERSION: '20.x'
-  PROJECT_PATH: '.'
+  PROJECT_PATH: './'
   NODE_CLI_TELEMETRY_OPTOUT: 1
   NODE_SKIP_FIRST_TIME_EXPERIENCE: 1
   NODE_NOLOGO: true
@@ -55,7 +54,6 @@ permissions:
 jobs:
   build:
     name: Build,Test && Snykscan
-    #if: github.event_name == 'push' && contains((github.event.commits), '***NO_CI***') == false && contains(toJson(github.event.commits), '[ci skip]') == false && contains(toJson(github.event.commits), '[skip ci]') == false
     runs-on: ubuntu-latest
     permissions:
       actions: read
@@ -87,7 +85,7 @@ jobs:
         SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
      
     - name: Publish Artifacts
-      uses: actions/upload-artifact@v1.0.0
+      uses: actions/upload-artifact@v4
       with:
         name: webapp
         path: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
@@ -102,9 +100,11 @@ jobs:
     steps:
     # Download artifacts
     - name: Download artifacts
-      uses: actions/download-artifact@v2
+      uses: actions/download-artifact@v4
+      id: deploy_testing
       with:
         name: webapp
+
     - name: Run Snyk to check for vulnerabilities
       uses: actions/checkout@master
       env:
@@ -120,7 +120,7 @@ jobs:
     steps:
     # Download artifacts
     - name: Download artifacts
-      uses: actions/download-artifact@v2
+      uses: actions/download-artifact@v4
       with:
         name: webapp
     - name: Run Snyk to check for vulnerabilities
@@ -130,7 +130,7 @@ jobs:
 
     # Deploy to App Service Linux
     - name: Deploy to Azure WebApp
-      uses: azure/webapps-deploy@v2
+      uses: azure/webapps-deploy@v3
       id: deploy_staging
       with:
         app-name: ${{ env.AZURE_WEBAPP_NAME }}

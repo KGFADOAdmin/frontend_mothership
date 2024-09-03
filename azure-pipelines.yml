@@ -78,8 +78,7 @@ stages:
       env:
          SNYK_TOKEN: $(SNYK_TOKEN)
 
-          # Step 3: Analyze Snyk scan results
-  
+         
  
 # Step 3: Approval to proceed to the testing environment
 - stage: TestDeployment

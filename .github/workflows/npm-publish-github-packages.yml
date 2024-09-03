@@ -85,7 +85,7 @@ jobs:
         SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
      
     - name: Publish Artifacts
-      uses: actions/upload-artifact@v1.0.0
+      uses: actions/upload-artifact@v4
       with:
         name: webapp
         path: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
@@ -104,6 +104,7 @@ jobs:
       id: deploy_testing
       with:
         name: webapp
+
     - name: Run Snyk to check for vulnerabilities
       uses: actions/checkout@master
       env:

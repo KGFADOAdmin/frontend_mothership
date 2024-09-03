@@ -75,8 +75,8 @@ stages:
         snyk auth $(SNYK_TOKEN)
         snyk test
       displayName: 'Run Snyk Security Scan'
-            env:
-              SNYK_TOKEN: $(SNYK_TOKEN)
+      env:
+         SNYK_TOKEN: $(SNYK_TOKEN)
 
           # Step 3: Analyze Snyk scan results
     - task: Bash@3

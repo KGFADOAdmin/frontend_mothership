@@ -39,7 +39,7 @@ stages:
     - script: 'echo "$(Build.DefinitionName), $(Build.BuildId), $(Build.BuildNumber)" > buildinfo.txt'
       displayName: 'Write build info'
       workingDirectory: '.'
-      
+
     - task: Npm@1
       inputs:
         command: 'custom'
@@ -53,14 +53,7 @@ stages:
         command: 'custom'
         workingDir: '.'
         customCommand : 'run build'
-    
-    - task : Npm@1
-      displayName: 'npm run dev'
-      inputs:
-        command: 'custom'
-        workingDir: '.'
-        customCommand : 'run dev'
-
+  
     - task: CopyFiles@2
       inputs:
         sourceFolder: '$(Build.SourcesDirectory)'

@@ -114,18 +114,7 @@ stages:
             displayName: 'Run Snyk Security Scan'
             env:
                SNYK_TOKEN: $(SNYK_TOKEN)
-
-     
-
-          - task: PublishTestResults@2
-            inputs:
-              testResultsFiles: '**/test-results/*.xml'
-              testResultsFormat: 'JUnit'
-              failTaskOnFailedTests: true
-            displayName: 'Publish Test Results'
-
-                
-                        
+ 
 - stage: Staging
   displayName: 'Deploy to Staging'
   dependsOn: TestDeployment

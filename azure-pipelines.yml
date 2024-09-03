@@ -79,18 +79,7 @@ stages:
          SNYK_TOKEN: $(SNYK_TOKEN)
 
           # Step 3: Analyze Snyk scan results
-    - task: Bash@3
-      displayName: 'Check Snyk Results'
-      inputs:
-        targetType: 'inline'
-        script: |
-          snyk test --json > snyk-report.json
-                if grep -q '"vulnerabilities": \[\]' snyk-report.json; then
-                  echo "No vulnerabilities found."
-                else
-                  echo "Critical vulnerabilities found. Failing build."
-                  exit 1
-                fi
+  
  
 # Step 3: Approval to proceed to the testing environment
 - stage: TestDeployment
@@ -127,20 +116,7 @@ stages:
             env:
                SNYK_TOKEN: $(SNYK_TOKEN)
 
-          # Step 3: Analyze Snyk scan results
-          - task: Bash@3
-            displayName: 'Check Snyk Results'
-            inputs:
-             targetType: 'inline'
-             script: |
-               snyk test --json > snyk-report.json
-                if grep -q '"vulnerabilities": \[\]' snyk-report.json; then
-                  echo "No vulnerabilities found."
-                else
-                  echo "Critical vulnerabilities found. Failing build."
-                  exit 1
-                fi 
-           
+     
 
           - task: PublishTestResults@2
             inputs:

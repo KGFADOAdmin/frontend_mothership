@@ -153,7 +153,7 @@ stages:
                         
 - stage: Staging
   displayName: 'Deploy to Staging'
-  dependsOn: BuildAndTest
+  dependsOn: TestDeployment
   jobs:
   - deployment: DeployToStaging
     displayName: 'Deploy to Staging'

@@ -101,38 +101,32 @@ stages:
           - script: |
               echo "Deploying to Test Environment"
             displayName: 'Run Integration Tests'
-         
-                
-          
-- stage: staging 
-  displayName: 'Deploy Staging environment'
-  dependsOn: TestDeployment 
+
+- stage: staging
+  displayName: staging environment
+  dependsOn: TestDeployment
   condition: succeeded()
+
   jobs:
-  - deployment: DeployToStaging
-    displayName: 'Deploy to Test Environment'
-    environment: 'staging'
-        
-  - job: staging  
+  - job:
     pool:
       vmImage: 'ubuntu-latest'
       environment: 
       name: 'CyberPanel-staging'
-      resourceType: 'VirtualMachine'  # Adjust according to your environment setup
-      
+      resourceType: 'VirtualMachine'
+
       steps:
-                    # Download artifacts
       - task: DownloadPipelineArtifact@2
         inputs:
         artifactName: 'webapp'
         targetPath: '$(System.DefaultWorkingDirectory)/webapp'
 
-                                       # Extract Artifact
+    # Extract Artifact
       - script: |
           unzip $(System.DefaultWorkingDirectory)/webapp.zip -d $(System.DefaultWorkingDirectory)/webapp
         displayName: 'Extract Artifact'
 
-                           # Deploy to CyberPanel using FTP
+ # Deploy to CyberPanel using FTP
       - task: FtpUpload@2
       inputs:
       credentialsOption: 'inputs'

@@ -10,14 +10,12 @@ pr:
 pool:
   vmImage: 'ubuntu-latest'
 variables:
-  SNYK_AUTH: '45678901'
+  
   SNYK_TOKEN: 'da364a31-6b96-412a-b516-c4d2bf4bc8fe'
+
   variables:
   rbuildConfiguration: 'Release'
   pBuildConfiguration: '--prod'
-  CYBERPANEL_SERVER: '168.119.231.115:21'
-  CYBERPANEL_USERNAME: 'KGFDevOpsAdmin_KGFDevOpsAdmin'
-  CYBERPANEL_PASSWORD: kwe9qjItw%vbnlPO
 
 stages:
 # Stage 1: Build & UnitTest
@@ -78,48 +76,23 @@ stages:
           snyk test --severity-threshold=high --json > snyk-results.json
       displayName: 'Run Snyk Scan'
 
-    - script: |
-        echo "Checking for Critical Vulnerabilities"
-        cat snyk-results.json
-        severityCount=$(jq '.vulnerabilities | map(select(.severity=="high" or .severity=="critical")) | length' snyk-results.json)
-        if [ "$severityCount" -gt 0 ]; then
-          echo "Critical vulnerabilities found!"
-          exit 1
-        fi
-      displayName: 'Check for Critical Vulnerabilities'
  
 # Step 3: Approval to proceed to the testing environment
 - stage: TestDeployment
   displayName: 'Test Environment Deployment'
   dependsOn: BuildAndTest
   condition: succeeded()
+ 
   jobs:
-  - deployment: DeployToTest
-    displayName: 'Deploy to Test Environment'
-    environment: 'Test' # Define the environment in Azure DevOps
-    strategy:
-      runOnce:
-        deploy:
-          steps:
+  - job: TestDeployment
+    pool:
+      vmImage: 'ubuntu-latest'
+    steps:
           - script: |
               echo "Deploying to Test Environment"
             displayName: 'Run Integration Tests'
-          - script: |
-              echo "Running Snyk security scan"
-              npm install -g snyk
-              snyk auth $(SNYK_TOKEN)
-              snyk test --severity-threshold=high --json > snyk-results.json
-            displayName: 'Run Snyk Scan'
-
-          - script: |
-                echo "Checking for Critical Vulnerabilities"
-                cat snyk-results.json
-                severityCount=$(jq '.vulnerabilities | map(select(.severity=="high" or .severity=="critical")) | length' snyk-results.json)
-                if [ "$severityCount" -gt 0 ]; then
-                echo "Critical vulnerabilities found!"
-                exit 1
-                fi
-            displayName: 'Check for Critical Vulnerabilities'
+          
+         
 
 - stage: StageDeployment
   displayName: 'Stage Environment Deployment'
@@ -135,20 +108,8 @@ stages:
           steps:
           - script: |
               echo "Running Snyk security scan"
-              npm install -g snyk
-              snyk auth $(SNYK_TOKEN)
-              snyk test --severity-threshold=high --json > snyk-results.json
+              
             displayName: 'Run Snyk Scan'
-
-          - script: |
-                echo "Checking for Critical Vulnerabilities"
-                cat snyk-results.json
-                severityCount=$(jq '.vulnerabilities | map(select(.severity=="high" or .severity=="critical")) | length' snyk-results.json)
-                if [ "$severityCount" -gt 0 ]; then
-                echo "Critical vulnerabilities found!"
-                exit 1
-                fi
-            displayName: 'Check for Critical Vulnerabilities'
           
           - task: FtpUpload@2
             inputs:

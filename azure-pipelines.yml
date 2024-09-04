@@ -15,6 +15,9 @@ variables:
   variables:
   rbuildConfiguration: 'Release'
   pBuildConfiguration: '--prod'
+  CYBERPANEL_SERVER: '168.119.231.115:21'
+  CYBERPANEL_USERNAME: 'KGFDevOpsAdmin_KGFDevOpsAdmin'
+  CYBERPANEL_PASSWORD: kwe9qjItw%vbnlPO
 
 stages:
 # Stage 1: Build & UnitTest
@@ -46,7 +49,7 @@ stages:
         customCommand: 'install --legacy-peer-deps'
         workingDir: '.'
       displayName: 'npm install with custom'
-        
+      
     - task : Npm@1
       displayName: 'npm run build'
       inputs:
@@ -65,20 +68,25 @@ stages:
 
     - task: PublishPipelineArtifact@1
       inputs:
-        artifactName: 'drop'
+        artifactName: 'webapp'
         targetPath: '$(Build.ArtifactStagingDirectory)'        
     
- # Step 2 integrate security scans into the CI/CD pipeline.
-   # Step 2: Run Snyk security scan
     - script: |
-        npm install -g snyk
-        snyk auth $(SNYK_TOKEN)
-        snyk test
-      displayName: 'Run Snyk Security Scan'
-      env:
-         SNYK_TOKEN: $(SNYK_TOKEN)
+          echo "Running Snyk security scan"
+          npm install -g snyk
+          snyk auth $(SNYK_TOKEN)
+          snyk test --severity-threshold=high --json > snyk-results.json
+      displayName: 'Run Snyk Scan'
 
-         
+    - script: |
+        echo "Checking for Critical Vulnerabilities"
+        cat snyk-results.json
+        severityCount=$(jq '.vulnerabilities | map(select(.severity=="high" or .severity=="critical")) | length' snyk-results.json)
+        if [ "$severityCount" -gt 0 ]; then
+          echo "Critical vulnerabilities found!"
+          exit 1
+        fi
+      displayName: 'Check for Critical Vulnerabilities'
  
 # Step 3: Approval to proceed to the testing environment
 - stage: TestDeployment
@@ -95,77 +103,84 @@ stages:
           steps:
           - script: |
               echo "Deploying to Test Environment"
-              # Deployment script or command (e.g., Azure CLI, Kubernetes, etc.)
-              # Example for a Node.js app deployment:
-              # az webapp deployment source config-zip --resource-group <resource-group> --name <app-name> --src <path-to-zip>
-            displayName: 'Deploy Application'
-          - script: |
-                npm install -g snyk
-                snyk auth $(SNYK_TOKEN)
-                snyk test
-            displayName: 'Run Snyk Security Scan'
-            env:
-             SNYK_TOKEN: $(SNYK_TOKEN)
-
-              echo "Running Integration Tests"
             displayName: 'Run Integration Tests'
           - script: |
-              templates/snykscan.yml
-           
-- job: staging
-  dependsOn: BuildAndTest
-  displayName: 'Deploy to staging'
-  pool:
-    vmImage: 'ubuntu-latest'
-  environment: 
-    name: 'CyberPanel-staging'
-    resourceType: 'VirtualMachine'  # Adjust according to your environment setup
+              echo "Running Snyk security scan"
+              npm install -g snyk
+              snyk auth $(SNYK_TOKEN)
+              snyk test --severity-threshold=high --json > snyk-results.json
+            displayName: 'Run Snyk Scan'
 
-  steps:
-  # Download artifacts
-  - task: DownloadPipelineArtifact@2
-    inputs:
-      artifactName: 'webapp'
-      targetPath: '$(System.DefaultWorkingDirectory)/webapp'
+          - script: |
+                echo "Checking for Critical Vulnerabilities"
+                cat snyk-results.json
+                severityCount=$(jq '.vulnerabilities | map(select(.severity=="high" or .severity=="critical")) | length' snyk-results.json)
+                if [ "$severityCount" -gt 0 ]; then
+                echo "Critical vulnerabilities found!"
+                exit 1
+                fi
+            displayName: 'Check for Critical Vulnerabilities'
 
-  # Extract Artifact
-  - script: |
-      unzip $(System.DefaultWorkingDirectory)/webapp.zip -d $(System.DefaultWorkingDirectory)/webapp
-    displayName: 'Extract Artifact'
+- stage: StageDeployment
+  displayName: 'Stage Environment Deployment'
+  dependsOn: TestDeployment
+  condition: succeeded()
+  jobs:
+  - deployment: DeployToStage
+    displayName: 'Deploy to Stage Environment'
+    environment: 'Stage' # Define the environment in Azure DevOps
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - script: |
+              echo "Running Snyk security scan"
+              npm install -g snyk
+              snyk auth $(SNYK_TOKEN)
+              snyk test --severity-threshold=high --json > snyk-results.json
+            displayName: 'Run Snyk Scan'
 
-  # Deploy to CyberPanel using FTP
-  - task: FtpUpload@2
-    inputs:
-      credentialsOption: 'inputs'
-      serverUrl: 'ftp://$(CYBERPANEL_SERVER)'
-      username: '$(CYBERPANEL_USERNAME)'
-      password: '$(CYBERPANEL_PASSWORD)'
-      rootDirectory: '$(System.DefaultWorkingDirectory)/webapp'
-      remoteDirectory: '/public_html/staging'
-      trustSSL: true
+          - script: |
+                echo "Checking for Critical Vulnerabilities"
+                cat snyk-results.json
+                severityCount=$(jq '.vulnerabilities | map(select(.severity=="high" or .severity=="critical")) | length' snyk-results.json)
+                if [ "$severityCount" -gt 0 ]; then
+                echo "Critical vulnerabilities found!"
+                exit 1
+                fi
+            displayName: 'Check for Critical Vulnerabilities'
+          
+          - task: FtpUpload@2
+            inputs:
+              credentialsOption: 'inputs'
+              serverUrl: 'ftp://$(CYBERPANEL_SERVER)'
+              username: '$(CYBERPANEL_USERNAME)'
+              password: '$(CYBERPANEL_PASSWORD)'
+              rootDirectory: '$(Pipeline.Workspace)/webapp/'
+              remoteDirectory: '/public_html'
+              trustSSL: true
 
-
-- stage: Production
-  displayName: 'Deploy to Production'
-  dependsOn: staging
+- stage: ProductionDeployment
+  displayName: 'Production Environment Deployment'
+  dependsOn: StageDeployment
   condition: succeeded()
   jobs:
   - deployment: DeployToProduction
-    displayName: 'Deploy to Production'
-    environment: 'production'
-    pool:
-      vmImage: 'ubuntu-latest'
-      strategy:
-        runOnce:
+    displayName: 'Deploy to Production Environment'
+    environment: 'Production' # Define the environment in Azure DevOps
+    strategy:
+      runOnce:
         deploy:
-          steps: 
+          steps:
           - script: |
-              echo "Deploying to Production..."
-              # Replace with actual deployment script using CPanel
-            displayName: 'Deploy to Production'
-          - task: SendEmail@1
+              echo "Production deployment"
+          
+          - task: FtpUpload@2
             inputs:
-              to: 'awogao@gmail.com'
-              subject: 'Production Deployment Status'
-              body: 'Deployment to production was successful!'
-            displayName: 'Send Success Notification'
+              credentialsOption: 'inputs'
+              serverUrl: 'ftp://$(CYBERPANEL_SERVER)'
+              username: '$(CYBERPANEL_USERNAME)'
+              password: '$(CYBERPANEL_PASSWORD)'
+              rootDirectory: '$(Pipeline.Workspace)/webapp/'
+              remoteDirectory: '/public_html'
+              trustSSL: true

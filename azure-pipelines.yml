@@ -112,25 +112,38 @@ stages:
           - script: |
               templates/snykscan.yml
            
-
-- stage: Staging
-  displayName: 'Deploy to Staging'
+- job: staging
   dependsOn: BuildAndTest
-  jobs:
-  - deployment: DeployToStaging
-    displayName: 'Deploy to Staging'
-    environment: 'staging'
-    pool:
-     vmImage: 'ubuntu-latest'
-    strategy:
-          runOnce:
-            deploy:
-              steps:
-              - script: |
-                   templates/snykscan.yml
-                    echo "Conduct UAT..."
-                    # Replace with actual UAT commands if any
-                displayName: 'Conduct UAT'
+  displayName: 'Deploy to staging'
+  pool:
+    vmImage: 'ubuntu-latest'
+  environment: 
+    name: 'CyberPanel-staging'
+    resourceType: 'VirtualMachine'  # Adjust according to your environment setup
+
+  steps:
+  # Download artifacts
+  - task: DownloadPipelineArtifact@2
+    inputs:
+      artifactName: 'webapp'
+      targetPath: '$(System.DefaultWorkingDirectory)/webapp'
+
+  # Extract Artifact
+  - script: |
+      unzip $(System.DefaultWorkingDirectory)/webapp.zip -d $(System.DefaultWorkingDirectory)/webapp
+    displayName: 'Extract Artifact'
+
+  # Deploy to CyberPanel using FTP
+  - task: FtpUpload@2
+    inputs:
+      credentialsOption: 'inputs'
+      serverUrl: 'ftp://$(CYBERPANEL_SERVER)'
+      username: '$(CYBERPANEL_USERNAME)'
+      password: '$(CYBERPANEL_PASSWORD)'
+      rootDirectory: '$(System.DefaultWorkingDirectory)/webapp'
+      remoteDirectory: '/public_html/staging'
+      trustSSL: true
+
 
 - stage: Production
   displayName: 'Deploy to Production'

@@ -102,7 +102,7 @@ stages:
               snyk test
             env:
               SNYK_TOKEN: $(SNYK_TOKEN)
-              workingDir: '.'
+            
           
 - stage: staging 
   displayName: 'Deploy Staging environment'

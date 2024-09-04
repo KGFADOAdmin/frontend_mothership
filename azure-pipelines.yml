@@ -10,7 +10,7 @@ pr:
 pool:
   vmImage: 'ubuntu-latest'
 variables:
-  SNYK_AUTH: '45678901'
+  
   SNYK_TOKEN: 'da364a31-6b96-412a-b516-c4d2bf4bc8fe'
   variables:
   rbuildConfiguration: 'Release'

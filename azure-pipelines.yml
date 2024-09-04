@@ -116,11 +116,11 @@ stages:
           steps:
           - script: |
               sudo apt-get update
-              sudo apt-get install -y zip composer
-              cd ./web
-              composer install --no-dev --optimize-autoloader
-              zip -r webapp.zip .
-                #displayame: 'Install dependencies and zip application'
+          
+              #cd ./webapp
+              #composer install --no-dev --optimize-autoloader
+             # zip -r webapp.zip .
+             #  displayname: 'Install dependencies and zip application'
  
           - task: PublishPipelineArtifact@1
             inputs:

@@ -112,16 +112,6 @@ stages:
               snyk auth $(SNYK_TOKEN)
               snyk test --severity-threshold=high --json > snyk-results.json
             displayName: 'Run Snyk Scan'
-
-          - script: |
-                echo "Checking for Critical Vulnerabilities"
-                cat snyk-results.json
-                severityCount=$(jq '.vulnerabilities | map(select(.severity=="high" or .severity=="critical")) | length' snyk-results.json)
-                if [ "$severityCount" -gt 0 ]; then
-                echo "Critical vulnerabilities found!"
-                exit 1
-                fi
-            displayName: 'Check for Critical Vulnerabilities'
           
           - task: FtpUpload@2
             inputs:

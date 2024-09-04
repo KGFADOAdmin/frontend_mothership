@@ -17,7 +17,7 @@ variables:
   pBuildConfiguration: '--prod'
   CYBERPANEL_SERVER: '168.119.231.115:8090'
   CYBERPANEL_USERNAME: 'KGFDevOpsAdmin'
-  CYBERPANEL_PASSWORD: 
+  CYBERPANEL_PASSWORD: reuHs#x2qMl4o^^N
 
 stages:
 # Stage 1: Build & UnitTest

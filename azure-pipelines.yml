@@ -104,6 +104,22 @@ stages:
           - script: |
               echo "Deploying to Test Environment"
             displayName: 'Run Integration Tests'
+          - script: |
+              echo "Running Snyk security scan"
+              npm install -g snyk
+              snyk auth $(SNYK_TOKEN)
+              snyk test --severity-threshold=high --json > snyk-results.json
+            displayName: 'Run Snyk Scan'
+
+          - script: |
+                echo "Checking for Critical Vulnerabilities"
+                cat snyk-results.json
+                severityCount=$(jq '.vulnerabilities | map(select(.severity=="high" or .severity=="critical")) | length' snyk-results.json)
+                if [ "$severityCount" -gt 0 ]; then
+                echo "Critical vulnerabilities found!"
+                exit 1
+                fi
+            displayName: 'Check for Critical Vulnerabilities'
 
 - stage: StageDeployment
   displayName: 'Stage Environment Deployment'
@@ -118,21 +134,22 @@ stages:
         deploy:
           steps:
           - script: |
-              sudo apt-get update
-              #cd ./webapp
-              #composer install --no-dev --optimize-autoloader
-             # zip -r webapp.zip .
-             #  displayname: 'Install dependencies and zip application'
-          #- task: DownloadPipelineArtifact@2
-           # inputs:
-            # artifactName: 'webapp'
-            # targetPath: '$(System.DefaultWorkingDirectory)/webapp'
-                  # Extract Artifact
-          #- script: |
-           #   zip -r webapp.zip .
-             # unzip $(System.DefaultWorkingDirectory)/webapp.zip -d $(System.DefaultWorkingDirectory)/webapp
-            #displayName: 'Extract Artifact'
-                  # Deploy to CyberPanel using FTP
+              echo "Running Snyk security scan"
+              npm install -g snyk
+              snyk auth $(SNYK_TOKEN)
+              snyk test --severity-threshold=high --json > snyk-results.json
+            displayName: 'Run Snyk Scan'
+
+          - script: |
+                echo "Checking for Critical Vulnerabilities"
+                cat snyk-results.json
+                severityCount=$(jq '.vulnerabilities | map(select(.severity=="high" or .severity=="critical")) | length' snyk-results.json)
+                if [ "$severityCount" -gt 0 ]; then
+                echo "Critical vulnerabilities found!"
+                exit 1
+                fi
+            displayName: 'Check for Critical Vulnerabilities'
+          
           - task: FtpUpload@2
             inputs:
               credentialsOption: 'inputs'
@@ -143,27 +160,27 @@ stages:
               remoteDirectory: '/public_html'
               trustSSL: true
 
-- stage: Production
-  displayName: 'Deploy to Production'
+- stage: ProductionDeployment
+  displayName: 'Production Environment Deployment'
   dependsOn: StageDeployment
   condition: succeeded()
   jobs:
   - deployment: DeployToProduction
-    displayName: 'Deploy to Production'
-    environment: 'production'
-    pool:
-      vmImage: 'ubuntu-latest'
-      strategy:
-        runOnce:
+    displayName: 'Deploy to Production Environment'
+    environment: 'Production' # Define the environment in Azure DevOps
+    strategy:
+      runOnce:
         deploy:
-          steps: 
+          steps:
           - script: |
-              echo "Deploying to Production..."
-              # Replace with actual deployment script using CPanel
-            displayName: 'Deploy to Production'
-          - task: SendEmail@1
+              echo "Production deployment"
+          
+          - task: FtpUpload@2
             inputs:
-              to: 'awogao@gmail.com'
-              subject: 'Production Deployment Status'
-              body: 'Deployment to production was successful!'
-            displayName: 'Send Success Notification'
+              credentialsOption: 'inputs'
+              serverUrl: 'ftp://$(CYBERPANEL_SERVER)'
+              username: '$(CYBERPANEL_USERNAME)'
+              password: '$(CYBERPANEL_PASSWORD)'
+              rootDirectory: '$(Pipeline.Workspace)/webapp/'
+              remoteDirectory: '/public_html'
+              trustSSL: true

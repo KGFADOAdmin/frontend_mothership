@@ -104,7 +104,7 @@ stages:
 
 - stage: StageDeployment
   displayName: 'Stage Environment Deployment'
-  dependsOn: BuildAndTest
+  dependsOn: TestDeployment
   condition: succeeded()
   jobs:
   - deployment: DeployToStage

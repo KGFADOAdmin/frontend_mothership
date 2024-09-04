@@ -129,7 +129,7 @@ stages:
 
                   # Extract Artifact
           - script: |
-              unzip $(System.DefaultWorkingDirectory)/webapp.zip -d $(System.DefaultWorkingDirectory)/webapp
+              unzip $(System.DefaultWorkingDirectory)/webapp -d $(System.DefaultWorkingDirectory)/webapp
             displayName: 'Extract Artifact'
                   # Deploy to CyberPanel using FTP
           - task: FtpUpload@2

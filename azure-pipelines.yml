@@ -111,13 +111,8 @@ stages:
             displayName: 'Run Integration Tests'
           - script: |
               templates/snykscan.yml
-            displayName: 'Run Snyk Security Scan'
-          
            
-            
 
-        
- 
 - stage: Staging
   displayName: 'Deploy to Staging'
   dependsOn: BuildAndTest
@@ -136,8 +131,6 @@ stages:
                     echo "Conduct UAT..."
                     # Replace with actual UAT commands if any
                 displayName: 'Conduct UAT'
- 
-  
 
 - stage: Production
   displayName: 'Deploy to Production'

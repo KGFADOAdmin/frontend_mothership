@@ -158,8 +158,9 @@ stages:
         username: '$(CYBERPANEL_USERNAME)'
         password: '$(CYBERPANEL_PASSWORD)'
         rootDirectory: '$(System.DefaultWorkingDirectory)/webapp'
-        remoteDirectory: '/public_html/staging'
+        remoteDirectory: '/public_html/'
         trustSSL: true
+        
 - stage: Production
   displayName: 'Deploy to Production'
   dependsOn: StageDeployment

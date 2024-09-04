@@ -91,10 +91,7 @@ stages:
           - script: |
               echo "Deploying to Test Environment"
             displayName: 'Run Integration Tests'
-          - script: |
-             npm config set fund false --location=global
-             set cache .npm
-             npm audit fix 
+          
          
 
 - stage: StageDeployment

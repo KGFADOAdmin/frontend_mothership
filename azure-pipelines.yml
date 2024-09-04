@@ -128,8 +128,8 @@ stages:
              artifactName: 'webapp'
              targetPath: '$(System.DefaultWorkingDirectory)/webapp'
                   # Extract Artifact
-          - script: |
-              zip -r webapp.zip .
+          #- script: |
+           #   zip -r webapp.zip .
              # unzip $(System.DefaultWorkingDirectory)/webapp.zip -d $(System.DefaultWorkingDirectory)/webapp
             #displayName: 'Extract Artifact'
                   # Deploy to CyberPanel using FTP

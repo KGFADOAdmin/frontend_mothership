@@ -116,21 +116,18 @@ stages:
           steps:
           - script: |
               sudo apt-get update
-
               #cd ./webapp
               #composer install --no-dev --optimize-autoloader
              # zip -r webapp.zip .
              #  displayname: 'Install dependencies and zip application'
-
           - task: DownloadPipelineArtifact@2
             inputs:
              artifactName: 'webapp'
              targetPath: '$(System.DefaultWorkingDirectory)/webapp'
-
                   # Extract Artifact
-          - script: |
-              unzip $(System.DefaultWorkingDirectory)/webapp -d $(System.DefaultWorkingDirectory)/webapp
-            displayName: 'Extract Artifact'
+         # - script: |
+             # unzip $(System.DefaultWorkingDirectory)/webapp.zip -d $(System.DefaultWorkingDirectory)/webapp
+            #displayName: 'Extract Artifact'
                   # Deploy to CyberPanel using FTP
           - task: FtpUpload@2
             inputs:
@@ -142,8 +139,6 @@ stages:
               remoteDirectory: '/public_html/'
               trustSSL: true
 
-    
-        
 - stage: Production
   displayName: 'Deploy to Production'
   dependsOn: StageDeployment

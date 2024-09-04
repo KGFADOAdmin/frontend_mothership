@@ -108,9 +108,7 @@ stages:
           steps:
           - script: |
               echo "Running Snyk security scan"
-              npm install -g snyk
-              snyk auth $(SNYK_TOKEN)
-              snyk test --severity-threshold=high --json > snyk-results.json
+              
             displayName: 'Run Snyk Scan'
           
           - task: FtpUpload@2

@@ -129,7 +129,37 @@ stages:
              publishLocation: 'pipeline'
 
           
+- stage: Deploy
+  displayName: 'Deploy Stage'
+  dependsOn: TestDeployment
+  jobs:
+  - job: staging
+    displayName: 'Deploy to CyberPanel staging'
+    pool:
+      vmImage: 'ubuntu-latest'
 
+    steps:
+    # Download artifacts
+    - task: DownloadPipelineArtifact@2
+      inputs:
+        artifactName: 'webapp'
+        targetPath: '$(System.DefaultWorkingDirectory)/webapp'
+
+    # Extract Artifact
+    - script: |
+        unzip $(System.DefaultWorkingDirectory)/webapp.zip -d $(System.DefaultWorkingDirectory)/webapp
+      displayName: 'Extract Artifact'
+
+    # Deploy to CyberPanel using FTP
+    - task: FtpUpload@2
+      inputs:
+        credentialsOption: 'inputs'
+        serverUrl: 'ftp://$(CYBERPANEL_SERVER)'
+        username: '$(CYBERPANEL_USERNAME)'
+        password: '$(CYBERPANEL_PASSWORD)'
+        rootDirectory: '$(System.DefaultWorkingDirectory)/webapp'
+        remoteDirectory: '/public_html/staging'
+        trustSSL: true
 - stage: Production
   displayName: 'Deploy to Production'
   dependsOn: StageDeployment

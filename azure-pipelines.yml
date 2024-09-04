@@ -106,16 +106,14 @@ stages:
           
 - stage: staging 
   displayName: 'Deploy Staging environment'
-  dependsOn: BuildAndTest 
+  dependsOn: TestDeployment 
   condition: succeeded()
   jobs:
   - deployment: DeployToStaging
     displayName: 'Deploy to Test Environment'
     environment: 'staging'
-    dependsOn: 
-    
-  
-  
+        
+  - job: staging  
     pool:
       vmImage: 'ubuntu-latest'
       environment: 

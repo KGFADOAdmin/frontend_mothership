@@ -95,47 +95,48 @@ stages:
           steps:
           - script: |
               echo "Deploying to Test Environment"
-              # Deployment script or command (e.g., Azure CLI, Kubernetes, etc.)
-              # Example for a Node.js app deployment:
-              # az webapp deployment source config-zip --resource-group <resource-group> --name <app-name> --src <path-to-zip>
-            displayName: 'Deploy Application'
-          - script: |
-                npm install -g snyk
-                snyk auth $(SNYK_TOKEN)
-                snyk test
-            displayName: 'Run Snyk Security Scan'
-            env:
-             SNYK_TOKEN: $(SNYK_TOKEN)
-
-              echo "Running Integration Tests"
             displayName: 'Run Integration Tests'
           - script: |
-              templates/snykscan.yml
-           
-- job: staging
-  dependsOn: BuildAndTest
-  displayName: 'Deploy to staging'
-  pool:
-    vmImage: 'ubuntu-latest'
-  environment: 
-    name: 'CyberPanel-staging'
-    resourceType: 'VirtualMachine'  # Adjust according to your environment setup
+              npm install -g snyk
+              snyk auth $(SNYK_TOKEN)
+              snyk test
+            env:
+              SNYK_TOKEN: $(SNYK_TOKEN)
+              workingDir: '.'
+          
+- stage: staging 
+  displayName: 'Deploy Staging environment'
+  dependsOn: BuildAndTest 
+  condition: succeeded()
+  jobs:
+  - deployment: DeployToStaging
+    displayName: 'Deploy to Test Environment'
+    environment: 'staging'
+    dependsOn: 
+    
+  
+  
+    pool:
+      vmImage: 'ubuntu-latest'
+      environment: 
+      name: 'CyberPanel-staging'
+      resourceType: 'VirtualMachine'  # Adjust according to your environment setup
+      
+      steps:
+                    # Download artifacts
+      - task: DownloadPipelineArtifact@2
+        inputs:
+        artifactName: 'webapp'
+        targetPath: '$(System.DefaultWorkingDirectory)/webapp'
 
-  steps:
-  # Download artifacts
-  - task: DownloadPipelineArtifact@2
-    inputs:
-      artifactName: 'webapp'
-      targetPath: '$(System.DefaultWorkingDirectory)/webapp'
+                                       # Extract Artifact
+      - script: |
+          unzip $(System.DefaultWorkingDirectory)/webapp.zip -d $(System.DefaultWorkingDirectory)/webapp
+        displayName: 'Extract Artifact'
 
-  # Extract Artifact
-  - script: |
-      unzip $(System.DefaultWorkingDirectory)/webapp.zip -d $(System.DefaultWorkingDirectory)/webapp
-    displayName: 'Extract Artifact'
-
-  # Deploy to CyberPanel using FTP
-  - task: FtpUpload@2
-    inputs:
+                           # Deploy to CyberPanel using FTP
+      - task: FtpUpload@2
+      inputs:
       credentialsOption: 'inputs'
       serverUrl: 'ftp://$(CYBERPANEL_SERVER)'
       username: '$(CYBERPANEL_USERNAME)'

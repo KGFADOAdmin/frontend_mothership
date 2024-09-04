@@ -139,7 +139,7 @@ stages:
               serverUrl: 'ftp://$(CYBERPANEL_SERVER)'
               username: '$(CYBERPANEL_USERNAME)'
               password: '$(CYBERPANEL_PASSWORD)'
-              rootDirectory: '$(System.DefaultWorkingDirectory)/webapp'
+              rootDirectory: '$(Pipeline.Workspace)/webapp/'
               remoteDirectory: '/public_html/'
               trustSSL: true
 

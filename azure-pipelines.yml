@@ -46,7 +46,7 @@ stages:
         customCommand: 'install --legacy-peer-deps'
         workingDir: '.'
       displayName: 'npm install with custom'
-        
+      
     - task : Npm@1
       displayName: 'npm run build'
       inputs:
@@ -68,17 +68,22 @@ stages:
         artifactName: 'drop'
         targetPath: '$(Build.ArtifactStagingDirectory)'        
     
- # Step 2 integrate security scans into the CI/CD pipeline.
-   # Step 2: Run Snyk security scan
     - script: |
-        npm install -g snyk
-        snyk auth $(SNYK_TOKEN)
-        snyk test
-      displayName: 'Run Snyk Security Scan'
-      env:
-         SNYK_TOKEN: $(SNYK_TOKEN)
+          echo "Running Snyk security scan"
+          npm install -g snyk
+          snyk auth $SNYK_AUTH_TOKEN
+          snyk test --severity-threshold=high --json > snyk-results.json
+      displayName: 'Run Snyk Scan'
 
-         
+    - script: |
+        echo "Checking for Critical Vulnerabilities"
+        cat snyk-results.json
+        severityCount=$(jq '.vulnerabilities | map(select(.severity=="high" or .severity=="critical")) | length' snyk-results.json)
+        if [ "$severityCount" -gt 0 ]; then
+        echo "Critical vulnerabilities found!"
+        exit 1
+        fi
+  
  
 # Step 3: Approval to proceed to the testing environment
 - stage: TestDeployment

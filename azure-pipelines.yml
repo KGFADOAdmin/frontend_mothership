@@ -80,10 +80,10 @@ stages:
         cat snyk-results.json
         severityCount=$(jq '.vulnerabilities | map(select(.severity=="high" or .severity=="critical")) | length' snyk-results.json)
         if [ "$severityCount" -gt 0 ]; then
-        echo "Critical vulnerabilities found!"
-        exit 1
+          echo "Critical vulnerabilities found!"
+          exit 1
         fi
-  
+      
  
 # Step 3: Approval to proceed to the testing environment
 - stage: TestDeployment

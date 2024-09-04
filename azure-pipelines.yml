@@ -140,7 +140,7 @@ stages:
               username: '$(CYBERPANEL_USERNAME)'
               password: '$(CYBERPANEL_PASSWORD)'
               rootDirectory: '$(Pipeline.Workspace)/webapp/'
-              remoteDirectory: '/public_html/'
+              remoteDirectory: '/public_html'
               trustSSL: true
 
 - stage: Production

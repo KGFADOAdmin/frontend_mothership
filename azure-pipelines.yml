@@ -81,14 +81,12 @@ stages:
   displayName: 'Test Environment Deployment'
   dependsOn: BuildAndTest
   condition: succeeded()
+ 
   jobs:
-  - deployment: DeployToTest
-    displayName: 'Deploy to Test Environment'
-    environment: 'Test' # Define the environment in Azure DevOps
-    strategy:
-      runOnce:
-        deploy:
-          steps:
+  - job: TestDeployment
+    pool:
+      vmImage: 'ubuntu-latest'
+    steps:
           - script: |
               echo "Deploying to Test Environment"
             displayName: 'Run Integration Tests'

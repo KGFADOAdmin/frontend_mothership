@@ -10,3 +10,4 @@
       displayName: 'Run Snyk Security Scan'
       env:
         SNYK_TOKEN: $(SNYK_TOKEN)
+      workingDir: '.'

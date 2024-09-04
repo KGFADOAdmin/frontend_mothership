@@ -121,11 +121,6 @@ stages:
               #composer install --no-dev --optimize-autoloader
              # zip -r webapp.zip .
              #  displayname: 'Install dependencies and zip application'
-          - task: PublishPipelineArtifact@1
-            inputs:
-             targetPath: '$(System.DefaultWorkingDirectory)/webapp.zip'
-             artifactName: 'webapp'
-             publishLocation: 'pipeline'
 
           - task: DownloadPipelineArtifact@2
             inputs:

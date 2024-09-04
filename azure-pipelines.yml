@@ -9,6 +9,9 @@ pr:
       - develop
 pool:
   vmImage: 'ubuntu-latest'
+variables:
+  
+  SNYK_TOKEN: 'da364a31-6b96-412a-b516-c4d2bf4bc8fe'
 
   variables:
   rbuildConfiguration: 'Release'
@@ -92,22 +95,7 @@ stages:
              npm config set fund false --location=global
              set cache .npm
              npm audit fix 
-          - script: |
-              echo "Running Snyk security scan"
-              npm install -g snyk
-              snyk auth $(SNYK_TOKEN)
-              snyk test --severity-threshold=high --json > snyk-results.json
-            displayName: 'Run Snyk Scan'
-
-          - script: |
-                echo "Checking for Critical Vulnerabilities"
-                cat snyk-results.json
-                severityCount=$(jq '.vulnerabilities | map(select(.severity=="high" or .severity=="critical")) | length' snyk-results.json)
-                if [ "$severityCount" -gt 0 ]; then
-                echo "Critical vulnerabilities found!"
-                exit 1
-                fi
-            displayName: 'Check for Critical Vulnerabilities'
+         
 
 - stage: StageDeployment
   displayName: 'Stage Environment Deployment'

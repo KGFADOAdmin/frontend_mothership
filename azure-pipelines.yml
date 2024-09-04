@@ -102,45 +102,37 @@ stages:
               echo "Deploying to Test Environment"
             displayName: 'Run Integration Tests'
 
-- stage: staging
-  displayName: staging environment
+- stage: StageDeployment
+  displayName: 'Stage Environment Deployment'
   dependsOn: TestDeployment
   condition: succeeded()
-
   jobs:
-  - job:
-    pool:
-      vmImage: 'ubuntu-latest'
-      environment: 
-      name: 'CyberPanel-staging'
-      resourceType: 'VirtualMachine'
+  - deployment: DeployToStage
+    displayName: 'Deploy to Stage Environment'
+    environment: 'Stage' # Define the environment in Azure DevOps
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - script: |
+              sudo apt-get update
+              sudo apt-get install -y zip composer
+              cd ./web
+              composer install --no-dev --optimize-autoloader
+              zip -r webapp.zip .
+                #displayame: 'Install dependencies and zip application'
+ 
+          - task: PublishPipelineArtifact@1
+            inputs:
+             targetPath: '$(System.DefaultWorkingDirectory)/webapp.zip'
+             artifactName: 'webapp'
+             publishLocation: 'pipeline'
 
-      steps:
-      - task: DownloadPipelineArtifact@2
-        inputs:
-        artifactName: 'webapp'
-        targetPath: '$(System.DefaultWorkingDirectory)/webapp'
-
-    # Extract Artifact
-      - script: |
-          unzip $(System.DefaultWorkingDirectory)/webapp.zip -d $(System.DefaultWorkingDirectory)/webapp
-        displayName: 'Extract Artifact'
-
- # Deploy to CyberPanel using FTP
-      - task: FtpUpload@2
-      inputs:
-      credentialsOption: 'inputs'
-      serverUrl: 'ftp://$(CYBERPANEL_SERVER)'
-      username: '$(CYBERPANEL_USERNAME)'
-      password: '$(CYBERPANEL_PASSWORD)'
-      rootDirectory: '$(System.DefaultWorkingDirectory)/webapp'
-      remoteDirectory: '/public_html/staging'
-      trustSSL: true
-
+          
 
 - stage: Production
   displayName: 'Deploy to Production'
-  dependsOn: staging
+  dependsOn: StageDeployment
   condition: succeeded()
   jobs:
   - deployment: DeployToProduction

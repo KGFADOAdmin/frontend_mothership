@@ -15,9 +15,9 @@ variables:
   variables:
   rbuildConfiguration: 'Release'
   pBuildConfiguration: '--prod'
-  CYBERPANEL_SERVER: '168.119.231.115:8090'
-  CYBERPANEL_USERNAME: 'KGFDevOpsAdmin'
-  CYBERPANEL_PASSWORD: reuHs#x2qMl4o^^N
+  CYBERPANEL_SERVER: '168.119.231.115:21'
+  CYBERPANEL_USERNAME: 'KGFDevOpsAdmin_KGFDevOpsAdmin'
+  CYBERPANEL_PASSWORD: kwe9qjItw%vbnlPO
 
 stages:
 # Stage 1: Build & UnitTest

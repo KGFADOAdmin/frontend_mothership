@@ -131,7 +131,7 @@ stages:
           
 - stage: Deploy
   displayName: 'Deploy Stage'
-  dependsOn: TestDeployment
+  dependsOn: BuildAndTest
   jobs:
   - job: staging
     displayName: 'Deploy to CyberPanel staging'
@@ -142,7 +142,7 @@ stages:
     # Download artifacts
     - task: DownloadPipelineArtifact@2
       inputs:
-        artifactName: 'webapp'
+        artifactName: 'drop'
         targetPath: '$(System.DefaultWorkingDirectory)/webapp'
 
     # Extract Artifact

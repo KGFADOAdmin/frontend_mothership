@@ -2,7 +2,7 @@ trigger:
   branches:
     include:
       - '*'
-
+#writen by Olu Awoga
 pr:
   branches:
     include:
@@ -171,7 +171,7 @@ stages:
         deploy:
           steps:
           - script: |
-              echo "Production deployment"
+              echo "Production deployment" 
           
           - task: FtpUpload@2
             inputs:
